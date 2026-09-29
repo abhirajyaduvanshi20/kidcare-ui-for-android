@@ -1,3 +1,42 @@
+export const SYMPTOMS_LIST = [
+  "Fever",
+  "Allergic Reactions",
+  "Cough",
+  "Vomiting",
+  "Diarrhea",
+  "Skin Rash",
+  "Cold",
+  "Loose stools",
+  "Constipation",
+  "Abdominal pain",
+  "Rashes",
+  "Ear pain",
+  "Dysuria",
+  "Injuries",
+  "Vaccination",
+  "Not eating well / Low appetite",
+  "Other Symptoms",
+  "Wheeze",
+  "Routine check up",
+  "Weight loss",
+  "Weight gain",
+  "Behaviour and Development"
+];
+
+export const SYMPTOMS_PAIRS = [
+  { left: 'Fever', right: 'Allergic Reactions' },
+  { left: 'Cough', right: 'Vomiting' },
+  { left: 'Diarrhea', right: 'Skin Rash' },
+  { left: 'Cold', right: 'Loose stools' },
+  { left: 'Constipation', right: 'Abdominal pain' },
+  { left: 'Rashes', right: 'Ear pain' },
+  { left: 'Dysuria', right: 'Injuries' },
+  { left: 'Vaccination', right: 'Not eating well / Low appetite' },
+  { left: 'Other Symptoms', right: 'Wheeze' },
+  { left: 'Routine check up', right: 'Weight loss' },
+  { left: 'Weight gain', right: 'Behaviour and Development' }
+];
+
 export const INITIAL_KIDS = [
   {
     id: "kid-101",
@@ -1086,7 +1125,7 @@ export const HEALTH_FEEDS = [
   }
 ];
 
-export const SYMPTOMS_LIST = [
+export const SYMPTOMS_CATEGORIZED_LIST = [
   { id: "sym-1", name: "Fever / High Temperature", icon: "🌡️", category: "Common" },
   { id: "sym-2", name: "Dry Cough / Congestion", icon: "🗣️", category: "Respiratory" },
   { id: "sym-3", name: "Runny / Blocked Nose", icon: "🤧", category: "Respiratory" },

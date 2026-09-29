@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
   HomeTabIcon, 
@@ -57,22 +57,17 @@ export const BottomNavBar = () => {
               outline: 'none'
             }}
           >
-            {/* Active Pill Indicator for Material 3 Tab */}
             <div 
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '48px',
-                height: '32px',
-                borderRadius: '16px',
-                background: isActive ? '#056DB5' : 'transparent',
-                transition: 'background 0.2s ease'
+                height: '30px'
               }}
             >
               <IconComponent 
                 size={tab.id === 'prescriptions' ? 22 : 26} 
-                color={isActive ? '#FFFFFF' : '#056DB5'} 
+                color={isActive ? '#056DB5' : '#64748B'} 
                 active={isActive}
               />
             </div>

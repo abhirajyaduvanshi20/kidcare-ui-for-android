@@ -21,13 +21,13 @@ import {
 } from '../common/AndroidIcons';
 
 const WEEK_DAYS = [
-  { key: 'monday', day: 'Mon', date: '12' },
-  { key: 'tuesday', day: 'Tue', date: '13' },
-  { key: 'wednesday', day: 'Wed', date: '14' },
-  { key: 'thursday', day: 'Thu', date: '15' },
-  { key: 'friday', day: 'Fri', date: '16' },
-  { key: 'saturday', day: 'Sat', date: '17' },
-  { key: 'sunday', day: 'Sun', date: '18' }
+  { key: 'monday', day: 'Mon', date: '29', month: 'Sep' },
+  { key: 'tuesday', day: 'Tue', date: '30', month: 'Sep' },
+  { key: 'wednesday', day: 'Wed', date: '01', month: 'Oct' },
+  { key: 'thursday', day: 'Thu', date: '02', month: 'Oct' },
+  { key: 'friday', day: 'Fri', date: '03', month: 'Oct' },
+  { key: 'saturday', day: 'Sat', date: '04', month: 'Oct' },
+  { key: 'sunday', day: 'Sun', date: '05', month: 'Oct' }
 ];
 
 const MEAL_SCHEDULE_BY_DAY = {
@@ -454,24 +454,6 @@ export const NutritionScreen = () => {
             </p>
           </div>
         </div>
-
-        {/* Calendar shortcut */}
-        <button
-          onClick={() => openModal('new-appointment')}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: '4px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#0F172A'
-          }}
-          title="View Appointments"
-        >
-          <CalendarIcon size={22} color="#0F172A" />
-        </button>
       </div>
 
       {/* 2. Weekday Date Selector Pills */}
@@ -493,8 +475,8 @@ export const NutritionScreen = () => {
               onClick={() => setSelectedDayKey(d.key)}
               style={{
                 flex: '0 0 auto',
-                minWidth: '54px',
-                padding: '10px 4px',
+                minWidth: '56px',
+                padding: '8px 4px',
                 borderRadius: '16px',
                 border: isSelected ? 'none' : '1px solid #E2E8F0',
                 background: isSelected ? '#0077D7' : '#FFFFFF',
@@ -502,7 +484,7 @@ export const NutritionScreen = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '4px',
+                gap: '2px',
                 cursor: 'pointer',
                 boxShadow: isSelected 
                   ? '0 4px 12px rgba(0, 119, 215, 0.35)' 
@@ -527,6 +509,16 @@ export const NutritionScreen = () => {
                 }}
               >
                 {d.date}
+              </span>
+              <span 
+                style={{ 
+                  fontSize: '9px', 
+                  fontWeight: '600',
+                  color: isSelected ? 'rgba(255,255,255,0.85)' : '#94A3B8',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {d.month}
               </span>
             </button>
           );
