@@ -1162,3 +1162,5 @@ export const FAQS = [
     answer: "You can tap on your child's profile card at the top and select '+ Add Child Profile' or go to Profile Settings > Add Kid Profile to manage multiple children in one parent account seamlessly."
   }
 ];
+
+

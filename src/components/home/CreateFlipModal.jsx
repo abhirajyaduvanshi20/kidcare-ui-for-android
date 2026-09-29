@@ -178,21 +178,11 @@ export const CreateFlipModal = () => {
             />
           </div>
 
-          {/* Query Description with Formatting Toolbar */}
+          {/* Query Description */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155' }}>
-                Detailed Message & Symptoms
-              </label>
-              
-              {/* Rich text tools preview */}
-              <div style={{ display: 'flex', gap: '4px', background: '#F1F5F9', padding: '2px 6px', borderRadius: '8px' }}>
-                <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}><Bold size={13} /></button>
-                <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}><Italic size={13} /></button>
-                <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}><Underline size={13} /></button>
-                <button type="button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}><List size={13} /></button>
-              </div>
-            </div>
+            <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '6px' }}>
+              Detailed Message & Symptoms
+            </label>
 
             <textarea
               placeholder="Describe symptoms, temperature, duration, current feeding/sleep condition..."

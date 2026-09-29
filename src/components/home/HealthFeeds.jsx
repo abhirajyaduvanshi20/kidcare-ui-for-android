@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { HEALTH_FEEDS } from '../../data/initialData';
-import { BookOpen, Heart, Bookmark, Clock, Sparkles } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 export const HealthFeeds = () => {
-  const [likes, setLikes] = useState({});
-  const [saved, setSaved] = useState({});
   const [selectedTag, setSelectedTag] = useState('All');
 
   const tags = ['All', 'Nutrition & Brain', 'Vaccines & Immunity', 'Sleep & Growth'];
@@ -12,17 +10,6 @@ export const HealthFeeds = () => {
   const filteredFeeds = selectedTag === 'All' 
     ? HEALTH_FEEDS 
     : HEALTH_FEEDS.filter(f => f.tag === selectedTag);
-
-  const toggleLike = (feedId, initialCount) => {
-    setLikes(prev => ({
-      ...prev,
-      [feedId]: prev[feedId] ? prev[feedId] - 1 : (initialCount + 1)
-    }));
-  };
-
-  const toggleSave = (feedId) => {
-    setSaved(prev => ({ ...prev, [feedId]: !prev[feedId] }));
-  };
 
   return (
     <div style={{ padding: '8px 18px 24px' }}>
@@ -59,112 +46,61 @@ export const HealthFeeds = () => {
 
       {/* Feed Cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {filteredFeeds.map((feed) => {
-          const currentLikesCount = likes[feed.id] !== undefined ? likes[feed.id] : feed.likes;
-          const isLiked = likes[feed.id] !== undefined && likes[feed.id] > feed.likes;
-          const isSaved = !!saved[feed.id];
-
-          return (
-            <div
-              key={feed.id}
-              style={{
-                background: '#FFFFFF',
-                borderRadius: '20px',
-                overflow: 'hidden',
-                border: '1px solid #EEF2F6',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-            >
-              <div style={{ position: 'relative', height: '140px', background: '#F1F5F9' }}>
-                <img 
-                  src={feed.image || "/assets/kid_meditating_mat_2.png"} 
-                  alt={feed.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <span style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  background: 'rgba(1, 39, 65, 0.85)',
-                  backdropFilter: 'blur(6px)',
-                  color: '#FFFFFF',
-                  fontSize: '10px',
-                  fontWeight: '700',
-                  padding: '3px 8px',
-                  borderRadius: '10px',
-                  textTransform: 'uppercase'
-                }}>
-                  {feed.tag}
-                </span>
-
-                <button
-                  onClick={() => toggleSave(feed.id)}
-                  style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    border: 'none',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    color: isSaved ? '#056DB4' : '#64748B'
-                  }}
-                >
-                  <Bookmark size={16} fill={isSaved ? '#056DB4' : 'none'} />
-                </button>
-              </div>
-
-              <div style={{ padding: '14px 16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#64748B', marginBottom: '6px' }}>
-                  <span>By <strong style={{ color: '#012741' }}>{feed.author}</strong></span>
-                  <span>•</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                    <Clock size={11} /> {feed.readTime}
-                  </span>
-                </div>
-
-                <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#012741', lineHeight: 1.3, marginBottom: '6px' }}>
-                  {feed.title}
-                </h4>
-
-                <p style={{ fontSize: '12.5px', color: '#64748B', lineHeight: 1.4, marginBottom: '12px' }}>
-                  {feed.excerpt}
-                </p>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '10px' }}>
-                  <button
-                    onClick={() => toggleLike(feed.id, feed.likes)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      color: isLiked ? '#F94C66' : '#64748B',
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <Heart size={16} fill={isLiked ? '#F94C66' : 'none'} />
-                    <span>{currentLikesCount}</span>
-                  </button>
-
-                  <span style={{ fontSize: '12px', color: '#056DB4', fontWeight: '700', cursor: 'pointer' }}>
-                    Read Article →
-                  </span>
-                </div>
-              </div>
+        {filteredFeeds.map((feed) => (
+          <div
+            key={feed.id}
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              border: '1px solid #EEF2F6',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <div style={{ position: 'relative', height: '140px', background: '#F1F5F9' }}>
+              <img 
+                src={feed.image || "/assets/kid_meditating_mat_2.png"} 
+                alt={feed.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <span style={{
+                position: 'absolute',
+                top: '12px',
+                left: '12px',
+                background: 'rgba(1, 39, 65, 0.85)',
+                backdropFilter: 'blur(6px)',
+                color: '#FFFFFF',
+                fontSize: '10px',
+                fontWeight: '700',
+                padding: '3px 8px',
+                borderRadius: '10px',
+                textTransform: 'uppercase'
+              }}>
+                {feed.tag}
+              </span>
             </div>
-          );
-        })}
+
+            <div style={{ padding: '14px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#64748B', marginBottom: '6px' }}>
+                <span>By <strong style={{ color: '#012741' }}>{feed.author}</strong></span>
+                <span>•</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  <Clock size={11} /> {feed.readTime}
+                </span>
+              </div>
+
+              <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#012741', lineHeight: 1.3, marginBottom: '6px' }}>
+                {feed.title}
+              </h4>
+
+              <p style={{ fontSize: '12.5px', color: '#64748B', lineHeight: 1.4, margin: 0 }}>
+                {feed.excerpt}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

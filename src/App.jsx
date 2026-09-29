@@ -7,7 +7,6 @@ import { Toast } from './components/common/Toast';
 
 // Home Tab Components
 import { KidCarousel } from './components/home/KidCarousel';
-import { QuickActions } from './components/home/QuickActions';
 import { FlipCardSection } from './components/home/FlipCardSection';
 import { UpcomingAppointmentBanner } from './components/home/UpcomingAppointmentBanner';
 import { HealthFeeds } from './components/home/HealthFeeds';
@@ -61,7 +60,6 @@ const MainAppContent = () => {
         <div className="screen-scroll-container">
           <KidCarousel />
           <UpcomingAppointmentBanner />
-          <QuickActions />
           <FlipCardSection />
           <HealthFeeds />
         </div>

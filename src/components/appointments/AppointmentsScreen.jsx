@@ -95,47 +95,7 @@ export const AppointmentsScreen = () => {
         </div>
       </div>
 
-      <div style={{ padding: '16px 18px' }}>
-        {/* Dedicated Follow-Up Highlight Section */}
-        {selectedFilter === 'FOLLOW_UP' && (
-          <div style={{
-            background: 'linear-gradient(135deg, #E8F8F3 0%, #D1FAE5 100%)',
-            border: '1.5px solid #A7F3D0',
-            borderRadius: '20px',
-            padding: '16px',
-            marginBottom: '16px',
-            boxShadow: '0 4px 14px rgba(83, 191, 157, 0.12)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#047857', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <RotateCcw size={16} />
-              </div>
-              <div>
-                <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#065F46' }}>
-                  Doctor Recommended Follow-Ups
-                </h4>
-                <p style={{ fontSize: '11px', color: '#047857' }}>
-                  Post-treatment monitoring, symptom re-checks & dosage reviews
-                </p>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '11.5px', color: '#047857', lineHeight: 1.4, marginTop: '6px', marginBottom: '12px' }}>
-              Follow-ups are essential to confirm your child's recovery from acute illnesses and assess ongoing response to prescribed treatments with Dr. Ila B.
-            </p>
-
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                onClick={() => openModal('new-appointment', { isFollowUp: true })}
-                className="btn-green"
-                style={{ flex: 1, padding: '9px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '700' }}
-              >
-                <RotateCcw size={14} /> Schedule New Follow-up
-              </button>
-            </div>
-          </div>
-        )}
-
+      <div style={{ padding: '16px 18px 40px' }}>
         {/* Appointment Cards Stream */}
         {filteredAppointments.length === 0 ? (
           <div style={{
