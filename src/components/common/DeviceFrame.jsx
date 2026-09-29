@@ -17,34 +17,27 @@ export const DeviceFrame = ({ children }) => {
   }, []);
 
   return (
-    <div style={{
-      width: '100vw',
-      minHeight: '100vh',
-      background: 'radial-gradient(circle at 50% 20%, #172a3a 0%, #081119 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: isDeviceFrameEnabled ? '20px 10px' : '0',
-      position: 'relative'
-    }}>
+    <div className={`device-frame-wrapper ${isDeviceFrameEnabled ? '' : 'frame-off'}`}>
       {/* Top Floating Controls on desktop/browser */}
-      <div style={{
-        position: 'fixed',
-        top: '12px',
-        zIndex: 999,
-        background: 'rgba(15, 23, 42, 0.9)',
-        backdropFilter: 'blur(10px)',
-        padding: '6px 14px',
-        borderRadius: '30px',
-        border: '1px solid rgba(255,255,255,0.15)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        color: '#E2E8F0',
-        fontSize: '12px',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.5)'
-      }}>
+      <div 
+        className="dev-floating-controls"
+        style={{
+          position: 'fixed',
+          top: '12px',
+          zIndex: 999,
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(10px)',
+          padding: '6px 14px',
+          borderRadius: '30px',
+          border: '1px solid rgba(255,255,255,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          color: '#E2E8F0',
+          fontSize: '12px',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.5)'
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#53BF9D' }}></span>
           <span>KidCare React (Android)</span>

@@ -7,13 +7,18 @@ export const HelpSupportModal = () => {
 
   return (
     <div 
+      className="modal-fullscreen"
       style={{ 
-        position: 'fixed', 
-        inset: 0, 
+        position: 'absolute', 
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         background: '#FAF9F7', 
-        zIndex: 90, 
+        zIndex: 120, 
         display: 'flex', 
         flexDirection: 'column',
+        overflow: 'hidden',
         animation: 'fadeIn 0.2s ease' 
       }}
     >
