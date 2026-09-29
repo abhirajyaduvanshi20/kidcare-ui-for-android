@@ -182,7 +182,7 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 90px;
+  padding-bottom: 110px;
   scroll-behavior: smooth;
   background: #FAF9F7;
 }

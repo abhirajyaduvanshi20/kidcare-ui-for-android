@@ -613,7 +613,7 @@ export const NutritionScreen = () => {
       style={{ 
         background: '#FAF9F7', 
         minHeight: '100%', 
-        paddingBottom: '95px',
+        paddingBottom: '120px',
         overflowX: 'hidden'
       }}
     >
@@ -1149,8 +1149,9 @@ export const NutritionScreen = () => {
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '12px',
-          marginTop: '4px',
-          paddingBottom: '8px'
+          marginTop: '6px',
+          marginBottom: '20px',
+          paddingBottom: '20px'
         }}>
           <button
             type="button"

@@ -29,6 +29,7 @@ import { NewAppointmentModal } from './components/appointments/NewAppointmentMod
 import { AppointmentDetailModal } from './components/appointments/AppointmentDetailModal';
 import { LiveConsultationModal } from './components/appointments/LiveConsultationModal';
 import { PrescriptionViewerModal } from './components/prescriptions/PrescriptionViewerModal';
+import { DocumentViewerModal } from './components/common/DocumentViewerModal';
 import { UploadRecordModal } from './components/prescriptions/UploadRecordModal';
 import { EditProfileModal } from './components/profile/EditProfileModal';
 import { AddKidModal } from './components/profile/AddKidModal';
@@ -84,6 +85,7 @@ const MainAppContent = () => {
       {activeModal === 'appointment-detail' && <AppointmentDetailModal />}
       {activeModal === 'live-consultation' && <LiveConsultationModal />}
       {activeModal === 'prescription-viewer' && <PrescriptionViewerModal />}
+      {activeModal === 'document-viewer' && <DocumentViewerModal />}
       {activeModal === 'upload-record' && <UploadRecordModal />}
       {activeModal === 'edit-profile' && <EditProfileModal />}
       {activeModal === 'add-kid' && <AddKidModal />}

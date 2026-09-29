@@ -103,7 +103,13 @@ export const INITIAL_FLIPS = [
     status: "Answered",
     statusColor: "#53BF9D",
     attachments: [
-      { type: "image", name: "thermometer_reading.jpg", url: "/assets/ss.png" }
+      { 
+        type: "PDF", 
+        name: "MMR Booster Care Guide.pdf", 
+        size: "1.2 MB",
+        pages: 3,
+        url: "/assets/pdf_logo_tp.png" 
+      }
     ],
     doctorReply: {
       doctorName: "Dr. Ila B",

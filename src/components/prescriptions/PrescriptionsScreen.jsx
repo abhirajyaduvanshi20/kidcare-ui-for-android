@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Plus, Eye, Download, Calendar, Pill } from 'lucide-react';
+import { Plus, Eye, Download, Share2, Calendar, Pill } from 'lucide-react';
 
 export const PrescriptionsScreen = () => {
   const { prescriptions, currentKid, openModal, addPrescriptionRecord, showToast } = useApp();
@@ -328,9 +328,41 @@ export const PrescriptionsScreen = () => {
                       <button
                         onClick={() => openModal('prescription-viewer', doc)}
                         className="btn-primary"
-                        style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', fontSize: '12px' }}
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
                       >
-                        <Eye size={13} /> View Document
+                        <Eye size={13} /> View
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator.share({
+                              title: doc.title,
+                              text: `KidCare Medical Record: ${doc.title}`,
+                              url: window.location.href
+                            }).catch(() => {});
+                          } else {
+                            navigator.clipboard?.writeText?.(window.location.href);
+                            showToast("Document link copied!");
+                          }
+                        }}
+                        style={{
+                          background: '#F1F5F9',
+                          border: 'none',
+                          color: '#056DB5',
+                          padding: '8px 12px',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px',
+                          fontSize: '12px',
+                          fontWeight: '600'
+                        }}
+                        title="Share Document"
+                      >
+                        <Share2 size={13} /> Share
                       </button>
 
                       <button
@@ -344,11 +376,14 @@ export const PrescriptionsScreen = () => {
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center'
+                          justifyContent: 'center',
+                          gap: '4px',
+                          fontSize: '12px',
+                          fontWeight: '600'
                         }}
                         title="Download Document"
                       >
-                        <Download size={13} />
+                        <Download size={13} /> Download
                       </button>
                     </div>
                   </div>
