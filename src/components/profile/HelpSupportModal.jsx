@@ -1,131 +1,260 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Phone, Mail, MessageCircle, Send, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowLeft, Phone, Mail } from 'lucide-react';
 
 export const HelpSupportModal = () => {
-  const { closeModal, showToast } = useApp();
-  const [ticketSubject, setTicketSubject] = useState('');
-  const [ticketMessage, setTicketMessage] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!ticketSubject.trim() || !ticketMessage.trim()) return;
-    setSubmitted(true);
-    showToast("Support ticket raised successfully! Our team will respond shortly.");
-  };
+  const { closeModal } = useApp();
 
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal-sheet animate-slide-up" onClick={(e) => e.stopPropagation()} style={{ maxHeight: '90%', display: 'flex', flexDirection: 'column' }}>
-        <div className="sheet-handle" />
+    <div 
+      style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        background: '#FAF9F7', 
+        zIndex: 90, 
+        display: 'flex', 
+        flexDirection: 'column',
+        animation: 'fadeIn 0.2s ease' 
+      }}
+    >
+      {/* Android Sub-Screen Top Bar */}
+      <div 
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 18px',
+          background: '#FAF9F7',
+          position: 'relative'
+        }}
+      >
+        <button
+          onClick={closeModal}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#1E293B',
+            zIndex: 2
+          }}
+          title="Back"
+        >
+          <ArrowLeft size={24} color="#1E293B" />
+        </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <div>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#012741' }}>24/7 Pediatric Support</h3>
-            <p style={{ fontSize: '12px', color: '#64748B' }}>Help desk & urgent clinic helpline</p>
-          </div>
-          <button 
-            onClick={closeModal}
-            style={{ background: '#F1F5F9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+        <h2 
+          style={{ 
+            position: 'absolute', 
+            left: 0, 
+            right: 0, 
+            textAlign: 'center', 
+            fontSize: '18px', 
+            fontWeight: '700', 
+            color: '#1E293B',
+            margin: 0,
+            pointerEvents: 'none'
+          }}
+        >
+          Help & Support
+        </h2>
+
+        <div style={{ width: '24px' }} />
+      </div>
+
+      {/* Main Content Area */}
+      <div 
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '0 16px 40px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px'
+        }}
+      >
+        {/* Intro text */}
+        <p 
+          style={{ 
+            fontSize: '13.5px', 
+            color: '#475569', 
+            lineHeight: 1.45,
+            margin: '4px 0 10px',
+            padding: '0 4px'
+          }}
+        >
+          You can get in touch with us through the platforms below. Our support team will reach out to you as soon as possible.
+        </p>
+
+        {/* Card 1: Customer Support */}
+        <div 
+          style={{
+            background: '#F8FAFC',
+            borderRadius: '16px',
+            border: '1px solid #E2E8F0',
+            padding: '18px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+          }}
+        >
+          <h3 
+            style={{ 
+              fontSize: '15px', 
+              fontWeight: '700', 
+              color: '#1E293B', 
+              margin: 0 
+            }}
           >
-            <X size={16} color="#64748B" />
-          </button>
-        </div>
+            Customer Support
+          </h3>
 
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {/* Quick Helpline Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <a
-              href="tel:+918001234567"
+          {/* Contact Number */}
+          <a
+            href="tel:+919771438787"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              textDecoration: 'none'
+            }}
+          >
+            <div 
               style={{
-                textDecoration: 'none',
-                background: '#EBF4FA',
-                borderRadius: '16px',
-                padding: '14px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: '#DCE5EF',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                border: '1px solid #BAE6FD'
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#056DB5',
+                flexShrink: 0
               }}
             >
-              <Phone size={20} color="#056DB4" />
-              <div>
-                <h5 style={{ fontSize: '13px', fontWeight: '800', color: '#012741' }}>Emergency Helpline</h5>
-                <p style={{ fontSize: '11px', color: '#056DB4', fontWeight: '700' }}>1800-123-4567</p>
-              </div>
-            </a>
+              <Phone size={18} />
+            </div>
 
-            <a
-              href="mailto:care@kidcareapp.com"
+            <div>
+              <span style={{ fontSize: '11.5px', color: '#64748B', display: 'block' }}>
+                Contact Number
+              </span>
+              <span style={{ fontSize: '14px', fontWeight: '700', color: '#1E293B', display: 'block', marginTop: '2px' }}>
+                +919771438787
+              </span>
+            </div>
+          </a>
+
+          {/* Email Address */}
+          <a
+            href="mailto:carepartner@healthpointranchi.com"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              textDecoration: 'none'
+            }}
+          >
+            <div 
               style={{
-                textDecoration: 'none',
-                background: '#E8F8F3',
-                borderRadius: '16px',
-                padding: '14px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: '#DCE5EF',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                border: '1px solid #A7F3D0'
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#056DB5',
+                flexShrink: 0
               }}
             >
-              <Mail size={20} color="#3AA17E" />
-              <div>
-                <h5 style={{ fontSize: '13px', fontWeight: '800', color: '#012741' }}>Email Clinical Desk</h5>
-                <p style={{ fontSize: '11px', color: '#3AA17E', fontWeight: '700' }}>care@kidcareapp.com</p>
-              </div>
-            </a>
-          </div>
+              <Mail size={18} />
+            </div>
 
-          {/* Raise Support Ticket Form */}
-          <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '16px', border: '1px solid #E2E8F0' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#012741', marginBottom: '8px' }}>
-              Raise a Support Query / Ticket
-            </h4>
-
-            {submitted ? (
-              <div style={{ textAlign: 'center', padding: '16px', background: '#F0FDF4', borderRadius: '12px', border: '1px solid #86EFAC' }}>
-                <CheckCircle2 size={32} color="#166534" style={{ margin: '0 auto 6px' }} />
-                <h5 style={{ fontSize: '14px', fontWeight: '800', color: '#166534' }}>Ticket Received!</h5>
-                <p style={{ fontSize: '12px', color: '#15803D', marginTop: '2px' }}>
-                  A pediatrician care representative will connect with you in 15-30 minutes.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Subject (e.g. Video call audio issue, Vaccination record update)"
-                    value={ticketSubject}
-                    onChange={(e) => setTicketSubject(e.target.value)}
-                    required
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '13px' }}
-                  />
-                </div>
-
-                <div>
-                  <textarea
-                    rows={3}
-                    placeholder="Describe your issue or question in detail..."
-                    value={ticketMessage}
-                    onChange={(e) => setTicketMessage(e.target.value)}
-                    required
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '13px', resize: 'none' }}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  style={{ width: '100%', padding: '12px', borderRadius: '14px', fontSize: '13px' }}
-                >
-                  <Send size={15} /> Submit Support Request
-                </button>
-              </form>
-            )}
-          </div>
+            <div>
+              <span style={{ fontSize: '11.5px', color: '#64748B', display: 'block' }}>
+                Email Address
+              </span>
+              <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#1E293B', display: 'block', marginTop: '2px', wordBreak: 'break-all' }}>
+                carepartner@healthpointranchi.com
+              </span>
+            </div>
+          </a>
         </div>
+
+        {/* Card 2: Social Media */}
+        <div 
+          style={{
+            background: '#F8FAFC',
+            borderRadius: '16px',
+            border: '1px solid #E2E8F0',
+            padding: '18px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+          }}
+        >
+          <h3 
+            style={{ 
+              fontSize: '15px', 
+              fontWeight: '700', 
+              color: '#1E293B', 
+              margin: 0 
+            }}
+          >
+            Social Media
+          </h3>
+
+          <a
+            href="https://instagram.com/drilakidswellbeing"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              textDecoration: 'none'
+            }}
+          >
+            <div 
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: '#FCE4EC',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                overflow: 'hidden'
+              }}
+            >
+              <img 
+                src="/assets/instagram_icon.png" 
+                alt="Instagram" 
+                style={{ width: '26px', height: '26px', objectFit: 'contain' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </div>
+
+            <div>
+              <span style={{ fontSize: '11.5px', color: '#64748B', display: 'block' }}>
+                Instagram
+              </span>
+              <span style={{ fontSize: '14px', fontWeight: '700', color: '#1E293B', display: 'block', marginTop: '2px' }}>
+                @drilakidswellbeing
+              </span>
+            </div>
+          </a>
+        </div>
+
       </div>
     </div>
   );

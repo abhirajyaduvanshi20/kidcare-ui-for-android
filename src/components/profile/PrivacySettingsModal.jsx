@@ -1,115 +1,143 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Shield, Lock, Smartphone, Cloud, Eye, Bell, Check } from 'lucide-react';
+import { ArrowLeft, Phone } from 'lucide-react';
 
 export const PrivacySettingsModal = () => {
-  const { closeModal, showToast } = useApp();
-
-  const [biometricEnabled, setBiometricEnabled] = useState(true);
-  const [cloudBackup, setCloudBackup] = useState(true);
-  const [shareRecordsWithClinic, setShareRecordsWithClinic] = useState(true);
-  const [vaccineAlerts, setVaccineAlerts] = useState(true);
-  const [doctorNotifications, setDoctorNotifications] = useState(true);
-
-  const handleSave = () => {
-    showToast("Privacy & security preferences updated");
-    closeModal();
-  };
-
-  const ToggleSwitch = ({ checked, onChange }) => (
-    <div
-      onClick={onChange}
-      style={{
-        width: '44px',
-        height: '24px',
-        borderRadius: '20px',
-        background: checked ? '#056DB4' : '#CBD5E1',
-        padding: '2px',
-        cursor: 'pointer',
-        transition: 'background 0.2s ease',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: checked ? 'flex-end' : 'flex-start'
-      }}
-    >
-      <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-    </div>
-  );
+  const { closeModal } = useApp();
+  const [isDndOff, setIsDndOff] = useState(true);
 
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal-sheet animate-slide-up" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
+    <div 
+      style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        background: '#FAF9F7', 
+        zIndex: 90, 
+        display: 'flex', 
+        flexDirection: 'column',
+        animation: 'fadeIn 0.2s ease' 
+      }}
+    >
+      {/* Android Sub-Screen Top Bar */}
+      <div 
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 18px',
+          background: '#FAF9F7',
+          position: 'relative'
+        }}
+      >
+        <button
+          onClick={closeModal}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#1E293B',
+            zIndex: 2
+          }}
+          title="Back"
+        >
+          <ArrowLeft size={24} color="#1E293B" />
+        </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <h2 
+          style={{ 
+            position: 'absolute', 
+            left: 0, 
+            right: 0, 
+            textAlign: 'center', 
+            fontSize: '18px', 
+            fontWeight: '700', 
+            color: '#1E293B',
+            margin: 0,
+            pointerEvents: 'none'
+          }}
+        >
+          Privacy Settings
+        </h2>
+
+        <div style={{ width: '24px' }} />
+      </div>
+
+      {/* Main Content: Call Preference Card */}
+      <div style={{ padding: '0 16px 40px' }}>
+        <div 
+          style={{
+            background: '#ECEFF5',
+            borderRadius: '16px',
+            padding: '16px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.02)'
+          }}
+        >
           <div>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#012741' }}>Privacy & Security</h3>
-            <p style={{ fontSize: '12px', color: '#64748B' }}>Device lock & health data protection</p>
+            <h4 
+              style={{ 
+                fontSize: '15px', 
+                fontWeight: '700', 
+                color: '#1E293B', 
+                margin: '0 0 4px 0' 
+              }}
+            >
+              Call Preference
+            </h4>
+            <p 
+              style={{ 
+                fontSize: '12px', 
+                color: '#64748B', 
+                margin: 0,
+                lineHeight: 1.3 
+              }}
+            >
+              {isDndOff 
+                ? "DND is off. You're open to CarePartner calls." 
+                : "DND is on. CarePartner calls are silenced."}
+            </p>
           </div>
-          <button 
-            onClick={closeModal}
-            style={{ background: '#F1F5F9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+
+          {/* Android DND Pill Toggle Switch */}
+          <div 
+            onClick={() => setIsDndOff(!isDndOff)}
+            style={{
+              width: '54px',
+              height: '30px',
+              borderRadius: '20px',
+              background: isDndOff ? '#80CBC4' : '#CBD5E1',
+              padding: '3px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: isDndOff ? 'flex-end' : 'flex-start',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
+            }}
           >
-            <X size={16} color="#64748B" />
-          </button>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '70vh', overflowY: 'auto' }}>
-          {/* Biometric Lock */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Lock size={18} color="#056DB4" />
-              <div>
-                <h5 style={{ fontSize: '13.5px', fontWeight: '700', color: '#012741' }}>Fingerprint / Biometric Lock</h5>
-                <p style={{ fontSize: '11px', color: '#64748B' }}>Require authentication to open app</p>
-              </div>
+            <div 
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                background: '#FFFFFF',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: isDndOff ? '#004D40' : '#64748B'
+              }}
+            >
+              <Phone size={12} strokeWidth={2.5} />
             </div>
-            <ToggleSwitch checked={biometricEnabled} onChange={() => setBiometricEnabled(!biometricEnabled)} />
           </div>
-
-          {/* Cloud Sync */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Cloud size={18} color="#53BF9D" />
-              <div>
-                <h5 style={{ fontSize: '13.5px', fontWeight: '700', color: '#012741' }}>Encrypted Cloud Backup</h5>
-                <p style={{ fontSize: '11px', color: '#64748B' }}>Safeguard growth & vaccine records</p>
-              </div>
-            </div>
-            <ToggleSwitch checked={cloudBackup} onChange={() => setCloudBackup(!cloudBackup)} />
-          </div>
-
-          {/* Doctor access */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Shield size={18} color="#056DB4" />
-              <div>
-                <h5 style={{ fontSize: '13.5px', fontWeight: '700', color: '#012741' }}>Share Records with Dr. Ila B</h5>
-                <p style={{ fontSize: '11px', color: '#64748B' }}>Allow pediatrician pre-consultation access</p>
-              </div>
-            </div>
-            <ToggleSwitch checked={shareRecordsWithClinic} onChange={() => setShareRecordsWithClinic(!shareRecordsWithClinic)} />
-          </div>
-
-          {/* Notifications toggles */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Bell size={18} color="#F7931E" />
-              <div>
-                <h5 style={{ fontSize: '13.5px', fontWeight: '700', color: '#012741' }}>Vaccine & Flip Push Alerts</h5>
-                <p style={{ fontSize: '11px', color: '#64748B' }}>Real-time reply & due reminders</p>
-              </div>
-            </div>
-            <ToggleSwitch checked={vaccineAlerts} onChange={() => setVaccineAlerts(!vaccineAlerts)} />
-          </div>
-
-          <button
-            onClick={handleSave}
-            className="btn-primary"
-            style={{ width: '100%', padding: '14px', borderRadius: '16px', marginTop: '10px' }}
-          >
-            <Check size={18} /> Save Privacy Preferences
-          </button>
         </div>
       </div>
     </div>

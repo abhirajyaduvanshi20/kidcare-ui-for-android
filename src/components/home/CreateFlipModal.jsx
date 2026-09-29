@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Bold, Italic, Underline, List, Paperclip, Camera, Send, AlertTriangle, HelpCircle, ThumbsUp, Calendar } from 'lucide-react';
+import { X, Camera, Send, AlertTriangle, HelpCircle, ThumbsUp, Calendar, Trash2 } from 'lucide-react';
 
 export const CreateFlipModal = () => {
-  const { closeModal, modalData, addFlip, currentKid, kids, switchKid } = useApp();
+  const { closeModal, modalData, addFlip, currentKid } = useApp();
   
-  const initialType = modalData?.type || 'ASK_QUESTION';
-  const [selectedType, setSelectedType] = useState(initialType);
+  const selectedType = modalData?.type || 'ASK_QUESTION';
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [attachedFiles, setAttachedFiles] = useState([]);
@@ -19,6 +18,9 @@ export const CreateFlipModal = () => {
     ROUTINE_CHECK: { title: 'Routine Milestone', icon: Calendar, gradient: 'linear-gradient(135deg, #5BBF9B 0%, #3AA17E 100%)' }
   };
 
+  const currentTypeConfig = flipTypeInfo[selectedType] || flipTypeInfo.ASK_QUESTION;
+  const TypeIcon = currentTypeConfig.icon;
+
   const handleAttachDemoPhoto = () => {
     setAttachedFiles(prev => [
       ...prev,
@@ -26,10 +28,14 @@ export const CreateFlipModal = () => {
     ]);
   };
 
+  const handleRemovePhoto = (index) => {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) {
-      alert("Please enter both a title and description for Dr. Ila B.");
+      alert("Please enter a title and message for Dr. Ila B.");
       return;
     }
 
@@ -43,11 +49,8 @@ export const CreateFlipModal = () => {
       });
       setIsSubmitting(false);
       closeModal();
-    }, 600);
+    }, 400);
   };
-
-  const currentTypeConfig = flipTypeInfo[selectedType] || flipTypeInfo.ASK_QUESTION;
-  const TypeIcon = currentTypeConfig.icon;
 
   return (
     <div className="modal-backdrop" onClick={closeModal}>
@@ -58,7 +61,7 @@ export const CreateFlipModal = () => {
       >
         <div className="sheet-handle" />
 
-        {/* Header with selected Flip Gradient */}
+        {/* Top Header with Selected Flip Type */}
         <div style={{
           background: currentTypeConfig.gradient,
           margin: '-20px -20px 16px -20px',
@@ -82,7 +85,7 @@ export const CreateFlipModal = () => {
               <TypeIcon size={20} color="#FFFFFF" />
             </div>
             <div>
-              <h3 style={{ fontSize: '17px', fontWeight: '800' }}>Create Flip Card</h3>
+              <h3 style={{ fontSize: '17px', fontWeight: '800' }}>{currentTypeConfig.title}</h3>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)' }}>For {currentKid.name} • Dr. Ila B</p>
             </div>
           </div>
@@ -95,71 +98,12 @@ export const CreateFlipModal = () => {
           </button>
         </div>
 
-        {/* Form */}
+        {/* Clean Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, overflowY: 'auto' }}>
-          {/* Flip Type Selector Chips */}
-          <div>
-            <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '6px' }}>
-              Flip Category
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-              {Object.keys(flipTypeInfo).map((typeKey) => {
-                const isCurrent = selectedType === typeKey;
-                return (
-                  <button
-                    key={typeKey}
-                    type="button"
-                    onClick={() => setSelectedType(typeKey)}
-                    style={{
-                      padding: '8px 10px',
-                      borderRadius: '12px',
-                      border: isCurrent ? '2px solid #056DB4' : '1px solid #E2E8F0',
-                      background: isCurrent ? '#EBF4FA' : '#F8FAFC',
-                      color: isCurrent ? '#056DB4' : '#64748B',
-                      fontSize: '12px',
-                      fontWeight: isCurrent ? '700' : '500',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                  >
-                    {flipTypeInfo[typeKey].title}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Child Selector */}
-          <div>
-            <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '6px' }}>
-              Child Profile
-            </label>
-            <select
-              value={currentKid.id}
-              onChange={(e) => switchKid(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                borderRadius: '12px',
-                border: '1px solid #CBD5E1',
-                fontSize: '14px',
-                color: '#012741',
-                fontWeight: '600',
-                background: '#FFFFFF'
-              }}
-            >
-              {kids.map(k => (
-                <option key={k.id} value={k.id}>
-                  {k.name} ({k.age}, {k.bloodGroup})
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Query Title */}
           <div>
             <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '6px' }}>
-              Title / Summary
+              Subject / Title
             </label>
             <input
               type="text"
@@ -173,7 +117,8 @@ export const CreateFlipModal = () => {
                 borderRadius: '12px',
                 border: '1px solid #CBD5E1',
                 fontSize: '14px',
-                outline: 'none'
+                outline: 'none',
+                color: '#012741'
               }}
             />
           </div>
@@ -183,10 +128,9 @@ export const CreateFlipModal = () => {
             <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '6px' }}>
               Detailed Message & Symptoms
             </label>
-
             <textarea
               placeholder="Describe symptoms, temperature, duration, current feeding/sleep condition..."
-              rows={4}
+              rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
@@ -198,7 +142,8 @@ export const CreateFlipModal = () => {
                 fontSize: '14px',
                 fontFamily: 'inherit',
                 resize: 'none',
-                outline: 'none'
+                outline: 'none',
+                color: '#012741'
               }}
             />
           </div>
@@ -207,7 +152,7 @@ export const CreateFlipModal = () => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
               <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155' }}>
-                Attachments (Photos, Reports, Thermometer)
+                Attachments (Optional)
               </label>
               <button
                 type="button"
@@ -218,8 +163,8 @@ export const CreateFlipModal = () => {
                   color: '#056DB4',
                   fontSize: '11px',
                   fontWeight: '700',
-                  padding: '4px 8px',
-                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  borderRadius: '10px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -231,57 +176,68 @@ export const CreateFlipModal = () => {
             </div>
 
             {attachedFiles.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {attachedFiles.map((file, idx) => (
-                  <div key={idx} style={{
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {attachedFiles.map((file, i) => (
+                  <div key={i} style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    background: '#F1F5F9',
-                    padding: '6px 10px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    color: '#334155'
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    background: '#F8FAFC',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    fontSize: '12px'
                   }}>
-                    <Paperclip size={13} />
-                    <span>{file.name}</span>
+                    <span style={{ color: '#012741', fontWeight: '600' }}>{file.name}</span>
                     <button
                       type="button"
-                      onClick={() => setAttachedFiles(prev => prev.filter((_, i) => i !== idx))}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
+                      onClick={() => handleRemovePhoto(i)}
+                      style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                     >
-                      <X size={12} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 ))}
               </div>
             ) : (
-              <div 
+              <div
                 onClick={handleAttachDemoPhoto}
                 style={{
                   border: '1.5px dashed #CBD5E1',
                   borderRadius: '12px',
-                  padding: '12px',
+                  padding: '14px',
                   textAlign: 'center',
+                  color: '#64748B',
+                  fontSize: '12px',
                   cursor: 'pointer',
                   background: '#FAF9F7'
                 }}
               >
-                <p style={{ fontSize: '12px', color: '#64748B' }}>Tap to capture or attach photo / lab report</p>
+                Tap to attach photo or medical report
               </div>
             )}
           </div>
 
-          {/* Submit CTA */}
-          <div style={{ marginTop: '10px' }}>
+          {/* Submit Button */}
+          <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
             <button
               type="submit"
               disabled={isSubmitting}
               className="btn-primary"
-              style={{ width: '100%', padding: '14px', borderRadius: '16px' }}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '16px',
+                fontSize: '14px',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
             >
-              <Send size={18} />
-              {isSubmitting ? 'Sending Flip to Doctor...' : 'Send Flip to Dr. Ila B'}
+              <Send size={16} />
+              {isSubmitting ? 'Sending Flip...' : 'Send Flip to Dr. Ila B'}
             </button>
           </div>
         </form>

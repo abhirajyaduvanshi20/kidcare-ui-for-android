@@ -1,200 +1,541 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { FileText, Plus, Download, Eye, Search } from 'lucide-react';
+import { Plus, Eye, Download, Calendar, Pill } from 'lucide-react';
 
 export const PrescriptionsScreen = () => {
-  const { prescriptions, currentKid, openModal } = useApp();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { prescriptions, currentKid, openModal, addPrescriptionRecord, showToast } = useApp();
+  const [activeTab, setActiveTab] = useState('Prescription'); // 'Prescription' | 'Pathology' | 'Radiology'
+  const [isDoctorExpanded, setIsDoctorExpanded] = useState(true);
+  const [showUploadSheet, setShowUploadSheet] = useState(false);
 
-  const kidPrescriptions = prescriptions.filter(p => p.kidId === currentKid.id || !p.kidId);
+  const cameraInputRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-  const filteredPrescriptions = kidPrescriptions.filter(doc => {
-    const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          doc.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          doc.diagnosis.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+  const tabs = ['Prescription', 'Pathology', 'Radiology'];
+
+  const typeMap = {
+    'Prescription': 'PRESCRIPTION',
+    'Pathology': 'PATHOLOGY',
+    'Radiology': 'RADIOLOGY'
+  };
+
+  const kidPrescriptions = prescriptions.filter(p => {
+    const matchesKid = p.kidId === currentKid.id || !p.kidId;
+    const matchesType = p.fileType === typeMap[activeTab];
+    return matchesKid && matchesType;
   });
 
-  return (
-    <div className="screen-scroll-container" style={{ background: '#FAF9F7' }}>
-      {/* Header Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, #056DB5 0%, #012741 100%)',
-        padding: '20px 18px 24px',
-        color: '#FFFFFF'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800' }}>Prescriptions</h2>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)', marginTop: '2px' }}>
-              Medical Records for {currentKid.name}
-            </p>
-          </div>
+  const handleCameraClick = () => {
+    setShowUploadSheet(false);
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
+    }
+  };
 
-          <button
-            onClick={() => openModal('upload-record')}
-            className="btn-green"
-            style={{ padding: '8px 14px', borderRadius: '14px', fontSize: '12px', fontWeight: '700' }}
+  const handleAttachFileClick = () => {
+    setShowUploadSheet(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelected = (e, source) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const newTitle = `${activeTab} - ${file.name.replace(/\.[^/.]+$/, "")}`;
+    addPrescriptionRecord({
+      title: newTitle,
+      fileType: typeMap[activeTab],
+      date: new Date().toISOString().split('T')[0],
+      doctor: 'Dr. Ila Binaykia',
+      diagnosis: source === 'camera' ? 'Scanned Document' : 'Uploaded File Attachment',
+      medicines: [],
+      fileUrl: '/assets/pdf_logo_tp.png',
+      downloadName: file.name
+    });
+
+    showToast(`Uploaded "${file.name}" to ${activeTab}`);
+  };
+
+  return (
+    <div 
+      className="screen-scroll-container" 
+      style={{ 
+        background: '#FFFFFF', 
+        minHeight: '100%', 
+        position: 'relative', 
+        display: 'flex', 
+        flexDirection: 'column',
+        paddingBottom: '80px'
+      }}
+    >
+      {/* Hidden File Inputs for Native Camera and File Picker */}
+      <input 
+        type="file" 
+        ref={cameraInputRef} 
+        accept="image/*" 
+        capture="environment" 
+        style={{ display: 'none' }} 
+        onChange={(e) => handleFileSelected(e, 'camera')}
+      />
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        accept=".pdf,image/*,.doc,.docx" 
+        style={{ display: 'none' }} 
+        onChange={(e) => handleFileSelected(e, 'file')}
+      />
+
+      {/* 1. Child Info Row: Avatar + Name (Sourav Mishra / currentKid.name) */}
+      <div 
+        style={{
+          padding: '16px 16px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          background: '#FFFFFF'
+        }}
+      >
+        <button
+          onClick={() => openModal('kid-selector')}
+          style={{
+            width: '46px',
+            height: '46px',
+            borderRadius: '50%',
+            background: '#FFFFFF',
+            border: '2px solid #E2E8F0',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            padding: 0,
+            overflow: 'hidden',
+            flexShrink: 0
+          }}
+          title="Switch Kid"
+        >
+          {currentKid.photo ? (
+            <img 
+              src={currentKid.photo} 
+              alt={currentKid.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          ) : (
+            <div style={{ width: '100%', height: '100%', background: '#F1F5F9' }} />
+          )}
+        </button>
+
+        <div style={{ flex: 1 }}>
+          <h2 
+            style={{ 
+              fontSize: '18px', 
+              fontWeight: '700', 
+              color: '#1E293B',
+              margin: 0,
+              lineHeight: 1.2
+            }}
           >
-            <Plus size={15} /> Upload Doc
-          </button>
+            {currentKid.name || 'Sourav Mishra'}
+          </h2>
         </div>
       </div>
 
-      <div style={{ padding: '16px 18px 40px' }}>
-        {/* Search */}
-        <div style={{
+      {/* 2. Three Clean Underline Tabs (Prescription | Pathology | Radiology) */}
+      <div 
+        style={{
           display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: '#FFFFFF',
-          padding: '10px 14px',
-          borderRadius: '14px',
-          border: '1px solid #E2E8F0',
-          marginBottom: '16px',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-        }}>
-          <Search size={16} color="#94A3B8" />
-          <input
-            type="text"
-            placeholder="Search diagnosis, medicine, doctor..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px' }}
-          />
+          borderBottom: '1px solid #CBD5E1',
+          background: '#FFFFFF'
+        }}
+      >
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                flex: 1,
+                padding: '12px 6px',
+                background: 'none',
+                border: 'none',
+                borderBottom: isActive ? '3px solid #056DB5' : '3px solid transparent',
+                color: '#056DB5',
+                fontSize: '14px',
+                fontWeight: isActive ? '700' : '600',
+                cursor: 'pointer',
+                textAlign: 'center',
+                transition: 'all 0.15s ease',
+                outline: 'none'
+              }}
+            >
+              {tab}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 3. Main Body: Doctor Header (Dr. Ila Binaykia) & Documents */}
+      <div style={{ padding: '16px 16px 80px', flex: 1 }}>
+        
+        {/* Doctor Header Row */}
+        <div 
+          onClick={() => setIsDoctorExpanded(!isDoctorExpanded)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '8px 0',
+            cursor: 'pointer',
+            userSelect: 'none'
+          }}
+        >
+          <div 
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              background: '#F1F5F9',
+              border: '1px solid #CBD5E1',
+              flexShrink: 0
+            }}
+          >
+            <img 
+              src="/assets/dr_ila_b.png" 
+              alt="Dr. Ila Binaykia" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/assets/nurse.png';
+              }}
+            />
+          </div>
+
+          <h3 
+            style={{ 
+              fontSize: '15px', 
+              fontWeight: '700', 
+              color: '#056DB5',
+              margin: 0
+            }}
+          >
+            Dr. Ila Binaykia
+          </h3>
         </div>
 
-        {/* Prescription Cards List */}
-        {filteredPrescriptions.length === 0 ? (
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '20px',
-            padding: '36px 20px',
-            textAlign: 'center',
-            border: '1px dashed #CBD5E1',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.02)'
-          }}>
-            <FileText size={36} color="#94A3B8" style={{ margin: '0 auto 10px' }} />
-            <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#012741' }}>No Prescriptions Found</h4>
-            <p style={{ fontSize: '12px', color: '#64748B', marginTop: '4px', marginBottom: '16px' }}>
-              Upload pediatric prescriptions or doctor notes to keep records organized.
-            </p>
-            <button
-              onClick={() => openModal('upload-record')}
-              className="btn-primary"
-              style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '12px' }}
-            >
-              <Plus size={14} /> Upload Prescription
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {filteredPrescriptions.map((doc) => (
-              <div
-                key={doc.id}
+        {/* Prescription Cards List if any */}
+        {isDoctorExpanded && (
+          <div style={{ marginTop: '12px' }}>
+            {kidPrescriptions.length === 0 ? (
+              <div 
                 style={{
-                  background: '#FFFFFF',
-                  borderRadius: '20px',
-                  padding: '16px',
-                  border: '1px solid #E2E8F0',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px'
+                  padding: '30px 16px',
+                  textAlign: 'center',
+                  color: '#94A3B8',
+                  fontSize: '13px'
                 }}
               >
-                {/* Top header row */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '12px',
-                      background: '#EBF4FA',
-                      color: '#056DB5',
+                No {activeTab.toLowerCase()} records found. Tap '+' to upload.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {kidPrescriptions.map((doc) => (
+                  <div
+                    key={doc.id}
+                    style={{
+                      background: '#FFFFFF',
+                      borderRadius: '16px',
+                      padding: '14px',
+                      border: '1px solid #E2E8F0',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <h4 style={{ fontSize: '14.5px', fontWeight: '800', color: '#012741', lineHeight: 1.2 }}>
-                        {doc.title}
-                      </h4>
-                      <p style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
-                        Doctor: <strong>{doc.doctor}</strong>
-                      </p>
-                    </div>
-                  </div>
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <div>
+                        <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#1E293B', margin: 0 }}>
+                          {doc.title}
+                        </h4>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '11.5px', color: '#64748B' }}>
+                          <Calendar size={12} color="#056DB5" />
+                          <span>{doc.date}</span>
+                        </div>
+                      </div>
 
-                  <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                    {doc.date}
-                  </span>
-                </div>
-
-                {/* Diagnosis Box */}
-                {doc.diagnosis && (
-                  <div style={{ background: '#F8FAFC', padding: '8px 12px', borderRadius: '10px', fontSize: '12px', color: '#334155' }}>
-                    <strong>Diagnosis:</strong> {doc.diagnosis}
-                  </div>
-                )}
-
-                {/* Prescribed medicines list */}
-                {doc.medicines && doc.medicines.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {doc.medicines.map((m, i) => (
-                      <span
-                        key={i}
+                      <span 
                         style={{
-                          fontSize: '11px',
-                          background: '#EBF4FA',
-                          color: '#056DB5',
+                          fontSize: '10.5px',
+                          fontWeight: '700',
                           padding: '3px 8px',
                           borderRadius: '8px',
-                          fontWeight: '600'
+                          background: '#EBF4FA',
+                          color: '#056DB5'
                         }}
                       >
-                        {m.name}
+                        {doc.fileType}
                       </span>
-                    ))}
+                    </div>
+
+                    {doc.diagnosis && (
+                      <div style={{ background: '#F8FAFC', padding: '6px 10px', borderRadius: '8px', fontSize: '12px', color: '#334155' }}>
+                        <strong>Diagnosis:</strong> {doc.diagnosis}
+                      </div>
+                    )}
+
+                    {doc.medicines && doc.medicines.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                        {doc.medicines.map((m, i) => (
+                          <span
+                            key={i}
+                            style={{
+                              fontSize: '11px',
+                              background: '#F0FDF4',
+                              color: '#166534',
+                              border: '1px solid #BBF7D0',
+                              padding: '2px 6px',
+                              borderRadius: '6px',
+                              fontWeight: '600',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '3px'
+                            }}
+                          >
+                            <Pill size={10} /> {m.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #F1F5F9', paddingTop: '8px', marginTop: '2px' }}>
+                      <button
+                        onClick={() => openModal('prescription-viewer', doc)}
+                        className="btn-primary"
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', fontSize: '12px' }}
+                      >
+                        <Eye size={13} /> View Document
+                      </button>
+
+                      <button
+                        onClick={() => showToast(`Downloading ${doc.downloadName || 'document.pdf'}...`)}
+                        style={{
+                          background: '#F1F5F9',
+                          border: 'none',
+                          color: '#056DB5',
+                          padding: '8px 12px',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        title="Download Document"
+                      >
+                        <Download size={13} />
+                      </button>
+                    </div>
                   </div>
-                )}
-
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #F1F5F9', paddingTop: '10px' }}>
-                  <button
-                    onClick={() => openModal('prescription-viewer', doc)}
-                    className="btn-primary"
-                    style={{ flex: 1, padding: '9px 12px', borderRadius: '12px', fontSize: '12px' }}
-                  >
-                    <Eye size={14} /> View Full Rx
-                  </button>
-
-                  <button
-                    onClick={() => alert(`Downloading ${doc.downloadName || 'prescription.pdf'}...`)}
-                    style={{
-                      background: '#F1F5F9',
-                      border: 'none',
-                      color: '#056DB5',
-                      padding: '9px 14px',
-                      borderRadius: '12px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                    title="Download PDF"
-                  >
-                    <Download size={14} />
-                  </button>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
+
+      {/* 4. Floating Action Button (FAB) on Bottom Right */}
+      <button
+        onClick={() => setShowUploadSheet(true)}
+        style={{
+          position: 'fixed',
+          bottom: '80px',
+          right: '20px',
+          width: '54px',
+          height: '54px',
+          borderRadius: '50%',
+          background: '#056DB5',
+          color: '#FFFFFF',
+          border: 'none',
+          boxShadow: '0 4px 14px rgba(5, 109, 181, 0.45)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 35,
+          transition: 'transform 0.15s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.06)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+        title="Upload Record"
+      >
+        <Plus size={28} strokeWidth={2.4} color="#FFFFFF" />
+      </button>
+
+      {/* 5. Bottom Sheet for Camera / Attach File (Exact Match to Screenshot 2) */}
+      {showUploadSheet && (
+        <div 
+          onClick={() => setShowUploadSheet(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.45)',
+            zIndex: 90,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            animation: 'fadeIn 0.2s ease'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#F8FAFC',
+              borderTopLeftRadius: '24px',
+              borderTopRightRadius: '24px',
+              padding: '16px 24px 36px',
+              width: '100%',
+              boxShadow: '0 -4px 20px rgba(0,0,0,0.15)',
+              animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+          >
+            {/* Grab Handle */}
+            <div 
+              style={{
+                width: '40px',
+                height: '4px',
+                borderRadius: '4px',
+                background: '#475569',
+                margin: '0 auto 28px'
+              }}
+            />
+
+            {/* Action Buttons Row */}
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+                maxWidth: '280px',
+                margin: '0 auto'
+              }}
+            >
+              {/* Option 1: Camera */}
+              <div 
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer'
+                }}
+                onClick={handleCameraClick}
+              >
+                <div 
+                  style={{
+                    width: '76px',
+                    height: '76px',
+                    borderRadius: '50%',
+                    background: '#F89E28',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 12px rgba(248, 158, 40, 0.3)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.06)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  {/* Camera SVG Vector from Android (camera_icon.xml) */}
+                  <svg 
+                    width="32" 
+                    height="28" 
+                    viewBox="0 0 27 22" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path 
+                      d="M17.782 12.762C17.782 15.153 15.836 17.099 13.445 17.099C11.054 17.099 9.109 15.153 9.109 12.762C9.109 10.37 11.054 8.425 13.445 8.425C15.836 8.425 17.782 10.371 17.782 12.762ZM26.89 6.604V18.921C26.89 20.563 25.559 21.895 23.917 21.895H2.973C1.331 21.895 0 20.563 0 18.921V6.604C0 4.962 1.331 3.631 2.973 3.631H6.631V2.602C6.631 1.165 7.795 0 9.232 0H17.658C19.095 0 20.259 1.165 20.259 2.602V3.63H23.917C25.559 3.631 26.89 4.962 26.89 6.604ZM20.012 12.762C20.012 9.141 17.066 6.195 13.445 6.195C9.825 6.195 6.879 9.141 6.879 12.762C6.879 16.383 9.825 19.329 13.445 19.329C17.066 19.329 20.012 16.383 20.012 12.762Z" 
+                      fill="#FFFFFF"
+                    />
+                  </svg>
+                </div>
+                <span 
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    color: '#1E293B',
+                    marginTop: '10px'
+                  }}
+                >
+                  Camera
+                </span>
+              </div>
+
+              {/* Option 2: Attach File */}
+              <div 
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer'
+                }}
+                onClick={handleAttachFileClick}
+              >
+                <div 
+                  style={{
+                    width: '76px',
+                    height: '76px',
+                    borderRadius: '50%',
+                    background: '#38C1A6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 12px rgba(56, 193, 166, 0.3)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.06)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  {/* Document / Attach File SVG Vector */}
+                  <svg 
+                    width="30" 
+                    height="30" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect x="4" y="2" width="16" height="20" rx="4" fill="none" stroke="#FFFFFF" strokeWidth="2.2" />
+                    <line x1="8" y1="8" x2="16" y2="8" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
+                    <line x1="8" y1="12" x2="16" y2="12" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
+                    <line x1="8" y1="16" x2="13" y2="16" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <span 
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    color: '#1E293B',
+                    marginTop: '10px'
+                  }}
+                >
+                  Attach File
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
