@@ -60,14 +60,13 @@ export const PrescriptionsScreen = () => {
 
   return (
     <div 
-      className="screen-scroll-container" 
       style={{ 
-        background: '#FFFFFF', 
-        minHeight: '100%', 
+        flex: 1, 
         position: 'relative', 
+        overflow: 'hidden', 
         display: 'flex', 
         flexDirection: 'column',
-        paddingBottom: '80px'
+        background: '#FFFFFF'
       }}
     >
       {/* Hidden File Inputs for Native Camera and File Picker */}
@@ -86,6 +85,17 @@ export const PrescriptionsScreen = () => {
         style={{ display: 'none' }} 
         onChange={(e) => handleFileSelected(e, 'file')}
       />
+
+      {/* Scrollable Screen Content */}
+      <div 
+        className="screen-scroll-container" 
+        style={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          background: '#FFFFFF',
+          paddingBottom: '90px' 
+        }}
+      >
 
       {/* 1. Child Info Row: Avatar + Name (Sourav Mishra / currentKid.name) */}
       <div 
@@ -133,7 +143,7 @@ export const PrescriptionsScreen = () => {
         <div style={{ flex: 1 }}>
           <h2 
             style={{ 
-              fontSize: '18px', 
+              fontSize: '17.5px', 
               fontWeight: '700', 
               color: '#1E293B',
               margin: 0,
@@ -190,7 +200,7 @@ export const PrescriptionsScreen = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            padding: '8px 0',
+            padding: '4px 0',
             cursor: 'pointer',
             userSelect: 'none'
           }}
@@ -229,7 +239,7 @@ export const PrescriptionsScreen = () => {
           </h3>
         </div>
 
-        {/* Prescription Cards List if any */}
+        {/* Prescription Cards List */}
         {isDoctorExpanded && (
           <div style={{ marginTop: '12px' }}>
             {kidPrescriptions.length === 0 ? (
@@ -241,7 +251,7 @@ export const PrescriptionsScreen = () => {
                   fontSize: '13px'
                 }}
               >
-                No {activeTab.toLowerCase()} records found. Tap '+' to upload.
+                {/* Clean area ready for documents or upload */}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -348,26 +358,28 @@ export const PrescriptionsScreen = () => {
           </div>
         )}
       </div>
+      {/* End Scrollable Content */}
+      </div>
 
-      {/* 4. Floating Action Button (FAB) on Bottom Right */}
+      {/* 4. Floating Action Button (FAB) on Bottom Right - Contained inside Mobile Frame */}
       <button
         onClick={() => setShowUploadSheet(true)}
         style={{
-          position: 'fixed',
-          bottom: '80px',
+          position: 'absolute',
+          bottom: '20px',
           right: '20px',
-          width: '54px',
-          height: '54px',
+          width: '56px',
+          height: '56px',
           borderRadius: '50%',
           background: '#056DB5',
           color: '#FFFFFF',
           border: 'none',
-          boxShadow: '0 4px 14px rgba(5, 109, 181, 0.45)',
+          boxShadow: '0 4px 18px rgba(5, 109, 181, 0.45)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          zIndex: 35,
+          zIndex: 50,
           transition: 'transform 0.15s ease'
         }}
         onMouseEnter={(e) => {
@@ -381,12 +393,12 @@ export const PrescriptionsScreen = () => {
         <Plus size={28} strokeWidth={2.4} color="#FFFFFF" />
       </button>
 
-      {/* 5. Bottom Sheet for Camera / Attach File (Exact Match to Screenshot 2) */}
+      {/* 5. Bottom Sheet for Camera / Attach File - Contained inside Mobile Frame */}
       {showUploadSheet && (
         <div 
           onClick={() => setShowUploadSheet(false)}
           style={{
-            position: 'fixed',
+            position: 'absolute',
             inset: 0,
             background: 'rgba(0, 0, 0, 0.45)',
             zIndex: 90,

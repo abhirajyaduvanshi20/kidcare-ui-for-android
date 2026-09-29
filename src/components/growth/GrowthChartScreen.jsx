@@ -9,18 +9,29 @@ import {
   Info, 
   Maximize2, 
   ChevronRight, 
-  Plus,
-  User
+  User,
+  Pencil
 } from 'lucide-react';
 
 export const GrowthChartScreen = () => {
-  const { closeModal, currentKid, growthLogs, openModal } = useApp();
+  const { closeModal, currentKid, growthLogs, addGrowthLog, updateKidProfile, showToast } = useApp();
   const [activeTab, setActiveTab] = useState('height'); // 'height' | 'weight' | 'bmi'
+  
+  // Edit Dialog Modal State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editWeight, setEditWeight] = useState(currentKid?.weight ? Number(currentKid.weight).toFixed(2) : '5.00');
+  const [editHeight, setEditHeight] = useState(currentKid?.height ? Number(currentKid.height).toFixed(2) : '55.00');
+  const [editHeadCirc, setEditHeadCirc] = useState(currentKid?.headCircumference ? Number(currentKid.headCircumference).toFixed(2) : '0.00');
 
   const childName = currentKid?.name || 'Sourav Mishra';
   const childGender = currentKid?.gender || 'Male';
   const childAge = currentKid?.age || '4 years 1 month';
   const childAgeShort = '4y 1m';
+
+  // Calculate live BMI
+  const currentHeightNum = parseFloat(editHeight) || 55.0;
+  const currentWeightNum = parseFloat(editWeight) || 5.0;
+  const currentBmiNum = ((currentWeightNum / ((currentHeightNum / 100) * (currentHeightNum / 100)))).toFixed(2);
 
   // Metrics based on active tab
   const metricConfigs = {
@@ -32,15 +43,15 @@ export const GrowthChartScreen = () => {
       color: '#059669', // Green
       lightColor: '#ECFDF5',
       borderColor: '#A7F3D0',
-      currentValue: currentKid?.height ? `${currentKid.height} cm` : '55.0 cm',
+      currentValue: `${Number(editHeight).toFixed(1)} cm`,
       percentile: '35th',
       status: 'Normal',
       yMin: 45.5,
       yMax: 121.5,
       yLabels: ['45.5', '64.5', '83.5', '102.5', '121.5'],
       xLabels: ['0', '5', '10', '15'],
-      markerPoint: { x: 5, y: 55.0, label: `${childAgeShort}\n55.0 cm` },
-      pastVal: currentKid?.height ? `${currentKid.height} cm` : '55.0 cm'
+      markerPoint: { x: 5, y: parseFloat(editHeight) || 55.0, label: `${childAgeShort}\n${Number(editHeight).toFixed(1)} cm` },
+      pastVal: `${Number(editHeight).toFixed(1)} cm`
     },
     weight: {
       key: 'weight',
@@ -50,15 +61,15 @@ export const GrowthChartScreen = () => {
       color: '#0077D7', // Blue
       lightColor: '#EFF6FF',
       borderColor: '#BFDBFE',
-      currentValue: currentKid?.weight ? `${currentKid.weight} kg` : '5.0 kg',
+      currentValue: `${Number(editWeight).toFixed(1)} kg`,
       percentile: '42nd',
       status: 'Normal',
       yMin: 2.3,
       yMax: 26.3,
       yLabels: ['2.3', '8.3', '14.3', '20.3', '26.3'],
       xLabels: ['0', '7', '14'],
-      markerPoint: { x: 7, y: 5.0, label: `${childAgeShort}\n5.0 kg` },
-      pastVal: currentKid?.weight ? `${currentKid.weight} kg` : '5.0 kg'
+      markerPoint: { x: 7, y: parseFloat(editWeight) || 5.0, label: `${childAgeShort}\n${Number(editWeight).toFixed(1)} kg` },
+      pastVal: `${Number(editWeight).toFixed(1)} kg`
     },
     bmi: {
       key: 'bmi',
@@ -68,15 +79,15 @@ export const GrowthChartScreen = () => {
       color: '#7C3AED', // Purple
       lightColor: '#F5F3FF',
       borderColor: '#DDD6FE',
-      currentValue: '16.53',
+      currentValue: currentBmiNum,
       percentile: '48th',
       status: 'Normal',
       yMin: 11.5,
       yMax: 19.5,
       yLabels: ['11.5', '13.5', '15.5', '17.5', '19.5'],
       xLabels: ['0', '7', '14'],
-      markerPoint: { x: 7, y: 16.53, label: `${childAgeShort}\n16.53` },
-      pastVal: '16.53'
+      markerPoint: { x: 7, y: parseFloat(currentBmiNum) || 16.53, label: `${childAgeShort}\n${currentBmiNum}` },
+      pastVal: currentBmiNum
     }
   };
 
@@ -95,13 +106,52 @@ export const GrowthChartScreen = () => {
     return svgHeight - pad.bottom - ((val - currentCfg.yMin) / (currentCfg.yMax - currentCfg.yMin)) * (svgHeight - pad.top - pad.bottom);
   };
 
+  const handleOpenEdit = () => {
+    setEditWeight(currentKid?.weight ? Number(currentKid.weight).toFixed(2) : '5.00');
+    setEditHeight(currentKid?.height ? Number(currentKid.height).toFixed(2) : '55.00');
+    setEditHeadCirc(currentKid?.headCircumference ? Number(currentKid.headCircumference).toFixed(2) : '0.00');
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    const w = parseFloat(editWeight) || 5.0;
+    const h = parseFloat(editHeight) || 55.0;
+    const hc = parseFloat(editHeadCirc) || 0.0;
+
+    addGrowthLog({
+      date: '06/06/2026',
+      ageMonth: 49,
+      weight: w,
+      height: h,
+      headCircumference: hc,
+      note: 'Updated via Growth Chart'
+    });
+
+    updateKidProfile(currentKid.id, {
+      weight: w,
+      height: h,
+      headCircumference: hc
+    });
+
+    setIsEditModalOpen(false);
+    showToast('Measurement updated successfully!');
+  };
+
   return (
     <div 
       className="modal-fullscreen"
       style={{ 
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         background: '#FAF9F7', 
         display: 'flex', 
-        flexDirection: 'column'
+        flexDirection: 'column',
+        zIndex: 120,
+        overflow: 'hidden'
       }}
     >
       {/* 1. Top App Bar */}
@@ -164,10 +214,11 @@ export const GrowthChartScreen = () => {
 
       {/* Main Scrollable Content */}
       <div 
+        className="screen-scroll-container" 
         style={{ 
           flex: 1, 
           overflowY: 'auto', 
-          padding: '0 16px 85px',
+          padding: '0 16px 30px',
           display: 'flex',
           flexDirection: 'column',
           gap: '14px'
@@ -631,7 +682,7 @@ export const GrowthChartScreen = () => {
                         fontWeight="800" 
                         textAnchor="middle"
                       >
-                        {activeTab === 'bmi' ? '16.53' : currentCfg.pastVal}
+                        {activeTab === 'bmi' ? currentBmiNum : currentCfg.pastVal}
                       </text>
                     </g>
                   </g>
@@ -718,7 +769,7 @@ export const GrowthChartScreen = () => {
             </button>
           </div>
 
-          {/* Past Measurement Row Card */}
+          {/* Past Measurement Row Card with Edit Pencil Icon */}
           <div 
             style={{
               background: '#FFFFFF',
@@ -755,7 +806,7 @@ export const GrowthChartScreen = () => {
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span 
                 style={{
                   background: '#DCFCE7',
@@ -768,48 +819,232 @@ export const GrowthChartScreen = () => {
               >
                 {currentCfg.status}
               </span>
-              <ChevronRight size={15} color="#94A3B8" />
+
+              {/* Pencil Edit Icon Button to open edit modal */}
+              <button
+                onClick={handleOpenEdit}
+                style={{
+                  background: '#F1F5F9',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#0F172A',
+                  transition: 'background 0.15s ease'
+                }}
+                title="Edit Measurement"
+              >
+                <Pencil size={14} color="#0F172A" />
+              </button>
             </div>
           </div>
         </div>
 
       </div>
 
-      {/* 8. Bottom Action Button - Mobile absolute container */}
-      <div 
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '10px 16px 16px',
-          background: 'linear-gradient(to top, #FAF9F7 80%, rgba(250, 249, 247, 0))',
-          zIndex: 20
-        }}
-      >
-        <button
-          onClick={() => openModal('update-growth')}
+      {/* 8. Edit Measurement Dialog Modal (Matching Screenshot with Cancel & Update) */}
+      {isEditModalOpen && (
+        <div 
+          onClick={() => setIsEditModalOpen(false)}
           style={{
-            width: '100%',
-            padding: '13px',
-            borderRadius: '14px',
-            border: 'none',
-            background: currentCfg.color,
-            color: '#FFFFFF',
-            fontSize: '14.5px',
-            fontWeight: '700',
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.55)',
+            zIndex: 100,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            boxShadow: `0 4px 14px ${currentCfg.color}40`,
-            transition: 'all 0.18s ease'
+            padding: '20px',
+            animation: 'fadeIn 0.2s ease'
           }}
         >
-          <Plus size={17} strokeWidth={2.5} /> Add New Measurement
-        </button>
-      </div>
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#ECEEF2',
+              borderRadius: '20px',
+              padding: '24px 22px 20px',
+              width: '100%',
+              maxWidth: '320px',
+              boxShadow: '0 12px 30px rgba(0,0,0,0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              animation: 'scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+          >
+            {/* Modal Title: Child Name */}
+            <h3 
+              style={{ 
+                fontSize: '18px', 
+                fontWeight: '700', 
+                color: '#1E293B', 
+                textAlign: 'center', 
+                margin: '0 0 20px 0' 
+              }}
+            >
+              {childName}
+            </h3>
+
+            <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              
+              {/* Field 1: Kid's Weight */}
+              <div>
+                <label 
+                  style={{ 
+                    fontSize: '13px', 
+                    fontWeight: '500', 
+                    color: '#475569', 
+                    display: 'block', 
+                    marginBottom: '5px' 
+                  }}
+                >
+                  Kid's Weight
+                </label>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  value={editWeight} 
+                  onChange={(e) => setEditWeight(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '14px',
+                    background: '#D1D5DB',
+                    border: '1px solid #9CA3AF',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    color: '#1E293B',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Field 2: Kid's Height */}
+              <div>
+                <label 
+                  style={{ 
+                    fontSize: '13px', 
+                    fontWeight: '500', 
+                    color: '#475569', 
+                    display: 'block', 
+                    marginBottom: '5px' 
+                  }}
+                >
+                  Kid's Height
+                </label>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  value={editHeight} 
+                  onChange={(e) => setEditHeight(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '14px',
+                    background: '#D1D5DB',
+                    border: '1px solid #9CA3AF',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    color: '#1E293B',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Field 3: Kid's Head Circumference */}
+              <div>
+                <label 
+                  style={{ 
+                    fontSize: '13px', 
+                    fontWeight: '500', 
+                    color: '#475569', 
+                    display: 'block', 
+                    marginBottom: '5px' 
+                  }}
+                >
+                  Kid's Head Circumference
+                </label>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  value={editHeadCirc} 
+                  onChange={(e) => setEditHeadCirc(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '14px',
+                    background: '#D1D5DB',
+                    border: '1px solid #9CA3AF',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    color: '#1E293B',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Bottom Action Buttons: Cancel & Update */}
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between', 
+                  gap: '12px', 
+                  marginTop: '10px' 
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  style={{
+                    flex: 1,
+                    padding: '10px 16px',
+                    borderRadius: '24px',
+                    border: 'none',
+                    background: '#D1D5DB',
+                    color: '#FFFFFF',
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease'
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '10px 16px',
+                    borderRadius: '24px',
+                    border: 'none',
+                    background: '#0077D7',
+                    color: '#FFFFFF',
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                    boxShadow: '0 3px 10px rgba(0, 119, 215, 0.3)'
+                  }}
+                >
+                  Update
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
