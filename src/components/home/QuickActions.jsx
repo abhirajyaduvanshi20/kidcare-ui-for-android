@@ -1,22 +1,23 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { TrendingUp, Syringe, Utensils, CalendarPlus, QrCode, Share2 } from 'lucide-react';
+import { TrendingUp, Syringe, Utensils, Calendar } from 'lucide-react';
 
 export const QuickActions = () => {
   const { openModal, setActiveTab, vaccines, currentKid } = useApp();
 
-  const dueVaccines = vaccines.filter(v => v.status === 'DUE' && v.kidId === currentKid.id).length;
+  const dueVaccines = vaccines ? vaccines.filter(v => v.status === 'DUE' && v.kidId === currentKid?.id).length : 1;
+  const currentWeightFormatted = currentKid?.weight ? `${Number(currentKid.weight).toFixed(2)} kg` : '5.00 kg';
 
   const actions = [
     {
       id: 'growth',
       title: 'Growth Chart',
       subtitle: 'WHO Percentiles',
-      badge: `${currentKid.weight} kg`,
-      badgeColor: '#EBF4FA',
-      badgeTextColor: '#056DB4',
+      badge: currentWeightFormatted,
+      badgeBg: '#E0F2FE',
+      badgeColor: '#0369A1',
       icon: TrendingUp,
-      gradient: 'linear-gradient(135deg, #056DB4 0%, #034E82 100%)',
+      iconBg: '#0077D7',
       onClick: () => openModal('growth-chart')
     },
     {
@@ -24,10 +25,10 @@ export const QuickActions = () => {
       title: 'Vaccinations',
       subtitle: dueVaccines > 0 ? `${dueVaccines} Due Soon` : 'Up to Date',
       badge: dueVaccines > 0 ? 'Action Due' : 'All Clear',
-      badgeColor: dueVaccines > 0 ? '#FEF3C7' : '#E8F8F3',
-      badgeTextColor: dueVaccines > 0 ? '#D97706' : '#3AA17E',
+      badgeBg: '#FEF3C7',
+      badgeColor: '#B45309',
       icon: Syringe,
-      gradient: 'linear-gradient(135deg, #53BF9D 0%, #2A8868 100%)',
+      iconBg: '#10B981',
       onClick: () => openModal('vaccines')
     },
     {
@@ -35,10 +36,10 @@ export const QuickActions = () => {
       title: 'Nutrition Plan',
       subtitle: 'Meals & Calorie Guide',
       badge: '4 Meals',
-      badgeColor: '#FFF2E6',
-      badgeTextColor: '#E36A00',
+      badgeBg: '#FFEDD5',
+      badgeColor: '#C2410C',
       icon: Utensils,
-      gradient: 'linear-gradient(135deg, #F7931E 0%, #C95D00 100%)',
+      iconBg: '#F97316',
       onClick: () => setActiveTab('nutrition')
     },
     {
@@ -46,26 +47,58 @@ export const QuickActions = () => {
       title: 'Consult Doctor',
       subtitle: 'Dr. Ila B (Video/Clinic)',
       badge: 'Instant Book',
-      badgeColor: '#F6ECFB',
-      badgeTextColor: '#8E2DE2',
-      icon: CalendarPlus,
-      gradient: 'linear-gradient(135deg, #B24592 0%, #7622C9 100%)',
-      onClick: () => openModal('new-appointment')
+      badgeBg: '#F3E8FF',
+      badgeColor: '#7E22CE',
+      icon: Calendar,
+      iconBg: '#8B5CF6',
+      onClick: () => setActiveTab('appointments')
     }
   ];
 
   return (
-    <div style={{ padding: '8px 18px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#012741' }}>Core Health Trackers</h3>
-        <span style={{ fontSize: '12px', color: '#056DB4', fontWeight: '600' }}>Active Monitoring</span>
+    <div style={{ padding: '6px 16px 14px' }}>
+      
+      {/* Header Row: Title + Active Monitoring link */}
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          marginBottom: '12px' 
+        }}
+      >
+        <h3 
+          style={{ 
+            fontSize: '16.5px', 
+            fontWeight: '800', 
+            color: '#0F172A', 
+            margin: 0,
+            letterSpacing: '-0.2px' 
+          }}
+        >
+          Core Health Trackers
+        </h3>
+
+        <span 
+          style={{ 
+            fontSize: '12px', 
+            color: '#0077D7', 
+            fontWeight: '700',
+            cursor: 'pointer' 
+          }}
+        >
+          Active Monitoring
+        </span>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '12px'
-      }}>
+      {/* 2x2 Grid Cards matching Image 1 */}
+      <div 
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px'
+        }}
+      >
         {actions.map((act) => {
           const IconComponent = act.icon;
           return (
@@ -74,58 +107,84 @@ export const QuickActions = () => {
               onClick={act.onClick}
               style={{
                 background: '#FFFFFF',
-                borderRadius: '20px',
-                padding: '14px',
+                borderRadius: '18px',
+                padding: '14px 12px 14px',
                 border: '1px solid #EEF2F6',
-                boxShadow: '0 4px 14px rgba(0,0,0,0.04)',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
                 cursor: 'pointer',
-                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                height: '112px'
+                height: '114px',
+                boxSizing: 'border-box',
+                transition: 'all 0.18s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(5, 109, 180, 0.12)';
+                e.currentTarget.style.boxShadow = '0 6px 18px rgba(0, 119, 215, 0.1)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.04)';
+                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.03)';
               }}
             >
+              {/* Top Row: Rounded Icon + Badge */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '12px',
-                  background: act.gradient,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#FFFFFF',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
-                }}>
-                  <IconComponent size={20} />
+                <div 
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '12px',
+                    background: act.iconBg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    flexShrink: 0
+                  }}
+                >
+                  <IconComponent size={20} strokeWidth={2.4} color="#FFFFFF" />
                 </div>
 
-                <span style={{
-                  fontSize: '10px',
-                  fontWeight: '700',
-                  padding: '3px 7px',
-                  borderRadius: '10px',
-                  background: act.badgeColor,
-                  color: act.badgeTextColor
-                }}>
+                <span 
+                  style={{
+                    fontSize: '10.5px',
+                    fontWeight: '700',
+                    padding: '3px 8px',
+                    borderRadius: '10px',
+                    background: act.badgeBg,
+                    color: act.badgeColor,
+                    letterSpacing: '-0.1px'
+                  }}
+                >
                   {act.badge}
                 </span>
               </div>
 
+              {/* Bottom Row: Title + Subtitle */}
               <div>
-                <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#012741', lineHeight: 1.2 }}>
+                <h4 
+                  style={{ 
+                    fontSize: '14px', 
+                    fontWeight: '700', 
+                    color: '#0F172A', 
+                    margin: 0,
+                    lineHeight: 1.2 
+                  }}
+                >
                   {act.title}
                 </h4>
-                <p style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <p 
+                  style={{ 
+                    fontSize: '11px', 
+                    color: '#64748B', 
+                    margin: '3px 0 0 0', 
+                    fontWeight: '500',
+                    whiteSpace: 'nowrap', 
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis' 
+                  }}
+                >
                   {act.subtitle}
                 </p>
               </div>

@@ -1,297 +1,443 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CalendarPlus, Video, MapPin, Clock, Calendar, ChevronRight, CheckCircle2, AlertCircle, XCircle, RotateCcw, Stethoscope, Sparkles, FileText } from 'lucide-react';
+import { 
+  Clock, 
+  Video, 
+  MapPin, 
+  ChevronRight, 
+  RotateCcw,
+  CheckCircle2,
+  XCircle,
+  Calendar
+} from 'lucide-react';
+
+// Pixel-perfect Double Clipboard Empty State Illustration from Android App
+const ClipboardEmptyIllustration = () => (
+  <svg 
+    width="160" 
+    height="160" 
+    viewBox="0 0 160 160" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ margin: '0 auto 16px' }}
+  >
+    {/* Back Clipboard (Tilted left with dashed border) */}
+    <g transform="rotate(-12 70 80)">
+      {/* Board */}
+      <rect x="34" y="25" width="72" height="100" rx="8" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1.5" strokeDasharray="4 3" />
+      {/* Top Blue Clip */}
+      <rect x="55" y="18" width="30" height="14" rx="3" fill="#0077D7" />
+      <circle cx="70" cy="22" r="3.5" fill="none" stroke="#FFFFFF" strokeWidth="1.5" />
+    </g>
+
+    {/* Front Clipboard (Centered) */}
+    <g>
+      {/* Board */}
+      <rect x="44" y="32" width="76" height="104" rx="8" fill="#FFFFFF" stroke="#64748B" strokeWidth="1.8" />
+      {/* Light Grey Note Sheet inside */}
+      <rect x="52" y="45" width="60" height="82" rx="4" fill="#E2E8F0" />
+      {/* Top Blue Clip */}
+      <rect x="64" y="24" width="36" height="15" rx="3" fill="#0077D7" />
+      <circle cx="82" cy="29" r="3.5" fill="none" stroke="#FFFFFF" strokeWidth="1.5" />
+    </g>
+  </svg>
+);
 
 export const AppointmentsScreen = () => {
   const { appointments, currentKid, openModal } = useApp();
-  const [selectedFilter, setSelectedFilter] = useState('UPCOMING'); // 'UPCOMING' | 'FOLLOW_UP' | 'COMPLETED' | 'CANCELLED'
+  const [activeTab, setActiveTab] = useState('Upcoming'); // 'Upcoming' | 'Completed' | 'Cancelled'
 
-  const followUpCount = appointments.filter(apt => apt.type === 'FOLLOW_UP' && (apt.kidId === currentKid.id || true)).length;
+  const tabs = ['Upcoming', 'Completed', 'Cancelled'];
 
-  const filteredAppointments = appointments.filter(apt => {
-    return apt.type === selectedFilter && (apt.kidId === currentKid.id || selectedFilter !== 'UPCOMING');
+  // Filter appointments for current kid and selected tab
+  const kidAppointments = appointments.filter(apt => {
+    const matchesKid = apt.kidId === currentKid?.id || !apt.kidId;
+    if (!matchesKid) return false;
+
+    if (activeTab === 'Upcoming') {
+      return apt.type === 'UPCOMING' || apt.type === 'FOLLOW_UP';
+    }
+    if (activeTab === 'Completed') {
+      return apt.type === 'COMPLETED';
+    }
+    if (activeTab === 'Cancelled') {
+      return apt.type === 'CANCELLED';
+    }
+    return false;
   });
 
-  const filterTabs = [
-    { key: 'UPCOMING', label: 'Upcoming' },
-    { key: 'FOLLOW_UP', label: 'Follow-Up', badge: followUpCount > 0 ? followUpCount : null },
-    { key: 'COMPLETED', label: 'Completed' },
-    { key: 'CANCELLED', label: 'Cancelled' }
-  ];
-
   return (
-    <div className="screen-scroll-container">
-      {/* Header Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, #056DB4 0%, #012741 100%)',
-        padding: '20px 18px 24px',
-        color: '#FFFFFF'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800' }}>Doctor Appointments</h2>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)' }}>
-              Consultations & Follow-ups for {currentKid.name}
-            </p>
-          </div>
-
+    <div 
+      style={{ 
+        flex: 1, 
+        position: 'relative', 
+        overflow: 'hidden', 
+        display: 'flex', 
+        flexDirection: 'column',
+        background: '#FFFFFF'
+      }}
+    >
+      {/* Scrollable Container */}
+      <div 
+        className="screen-scroll-container" 
+        style={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          background: '#FFFFFF',
+          paddingBottom: '85px',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {/* 1. Child Info Row: Avatar + Name (Sourav Mishra / currentKid.name) */}
+        <div 
+          style={{
+            padding: '16px 16px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            background: '#FFFFFF'
+          }}
+        >
           <button
-            onClick={() => openModal('new-appointment')}
-            className="btn-green"
-            style={{ padding: '8px 14px', borderRadius: '14px', fontSize: '12px', fontWeight: '700' }}
+            onClick={() => openModal('kid-selector')}
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '50%',
+              background: '#FFFFFF',
+              border: '2px solid #E2E8F0',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              padding: 0,
+              overflow: 'hidden',
+              flexShrink: 0
+            }}
+            title="Switch Kid"
           >
-            <CalendarPlus size={15} /> Book Visit
+            {currentKid?.photo ? (
+              <img 
+                src={currentKid.photo} 
+                alt={currentKid.name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            ) : (
+              <div style={{ width: '100%', height: '100%', background: '#F1F5F9' }} />
+            )}
           </button>
+
+          <div style={{ flex: 1 }}>
+            <h2 
+              style={{ 
+                fontSize: '17.5px', 
+                fontWeight: '700', 
+                color: '#1E293B',
+                margin: 0,
+                lineHeight: 1.2
+              }}
+            >
+              {currentKid?.name || 'Sourav Mishra'}
+            </h2>
+          </div>
         </div>
 
-        {/* Filter Segmented Control with 4 tabs */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          background: 'rgba(0,0,0,0.25)',
-          padding: '4px',
-          borderRadius: '16px',
-          backdropFilter: 'blur(8px)',
-          gap: '2px'
-        }}>
-          {filterTabs.map((tab) => {
-            const isActive = selectedFilter === tab.key;
+        {/* 2. Three Clean Underline Tabs (Upcoming | Completed | Cancelled) */}
+        <div 
+          style={{
+            display: 'flex',
+            borderBottom: '1px solid #CBD5E1',
+            background: '#FFFFFF'
+          }}
+        >
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab;
             return (
               <button
-                key={tab.key}
-                onClick={() => setSelectedFilter(tab.key)}
+                key={tab}
+                onClick={() => setActiveTab(tab)}
                 style={{
-                  padding: '8px 4px',
+                  flex: 1,
+                  padding: '12px 6px',
+                  background: 'none',
                   border: 'none',
-                  borderRadius: '12px',
-                  background: isActive ? '#FFFFFF' : 'transparent',
-                  color: isActive ? '#056DB4' : 'rgba(255,255,255,0.85)',
-                  fontWeight: isActive ? '800' : '600',
-                  fontSize: '11px',
+                  borderBottom: isActive ? '3px solid #056DB5' : '3px solid transparent',
+                  color: '#056DB5',
+                  fontSize: '14px',
+                  fontWeight: isActive ? '700' : '600',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px'
+                  textAlign: 'center',
+                  transition: 'all 0.15s ease',
+                  outline: 'none'
                 }}
               >
-                <span>{tab.label}</span>
-                {tab.badge && (
-                  <span style={{
-                    background: isActive ? '#056DB4' : '#53BF9D',
-                    color: '#FFFFFF',
-                    fontSize: '9.5px',
-                    fontWeight: '800',
-                    padding: '1px 5px',
-                    borderRadius: '8px'
-                  }}>
-                    {tab.badge}
-                  </span>
-                )}
+                {tab}
               </button>
             );
           })}
         </div>
-      </div>
 
-      <div style={{ padding: '16px 18px 40px' }}>
-        {/* Appointment Cards Stream */}
-        {filteredAppointments.length === 0 ? (
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '22px',
-            padding: '32px 20px',
-            textAlign: 'center',
-            border: '1px dashed #CBD5E1',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.03)'
-          }}>
-            <Calendar size={36} color="#94A3B8" style={{ margin: '0 auto 10px' }} />
-            <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#012741' }}>
-              No {selectedFilter === 'FOLLOW_UP' ? 'follow-up' : selectedFilter.toLowerCase()} appointments
-            </h4>
-            <p style={{ fontSize: '12px', color: '#64748B', marginTop: '4px', marginBottom: '16px' }}>
-              {selectedFilter === 'FOLLOW_UP' 
-                ? 'No pending follow-up visits requested for this child.' 
-                : 'Schedule a pediatric visit or routine checkup with Dr. Ila B.'}
-            </p>
-            <button
-              onClick={() => openModal('new-appointment', selectedFilter === 'FOLLOW_UP' ? { isFollowUp: true } : null)}
-              className="btn-primary"
-              style={{ padding: '10px 18px', borderRadius: '14px', fontSize: '13px' }}
+        {/* 3. Main Content: Empty State OR Appointments Stream */}
+        <div style={{ flex: 1, padding: '24px 16px 20px', display: 'flex', flexDirection: 'column' }}>
+          
+          {kidAppointments.length === 0 ? (
+            /* Empty State Matching Exact Screenshots */
+            <div 
+              style={{ 
+                flex: 1, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                textAlign: 'center',
+                padding: '40px 16px 20px'
+              }}
             >
-              <CalendarPlus size={15} /> {selectedFilter === 'FOLLOW_UP' ? 'Request Follow-up Slot' : 'Book Appointment'}
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {filteredAppointments.map((apt) => {
-              const isUpcoming = apt.type === 'UPCOMING';
-              const isFollowUp = apt.type === 'FOLLOW_UP';
-              const isCompleted = apt.type === 'COMPLETED';
+              <ClipboardEmptyIllustration />
 
-              return (
-                <div
-                  key={apt.id}
-                  style={{
-                    background: '#FFFFFF',
-                    borderRadius: '22px',
-                    padding: '16px',
-                    border: isFollowUp ? '1.5px solid #A7F3D0' : '1px solid #EEF2F6',
-                    boxShadow: isFollowUp ? '0 6px 18px rgba(83, 191, 157, 0.12)' : '0 4px 16px rgba(0,0,0,0.04)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px'
-                  }}
-                >
-                  {/* Doctor Info & Status */}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{
-                        width: '46px',
-                        height: '46px',
-                        borderRadius: '14px',
-                        overflow: 'hidden',
-                        border: '2px solid #E2E8F0',
-                        flexShrink: 0
-                      }}>
-                        <img 
-                          src={apt.doctorAvatar || "/assets/dr_ila_b.png"} 
-                          alt={apt.doctor}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      </div>
+              <h3 
+                style={{ 
+                  fontSize: '18px', 
+                  fontWeight: '800', 
+                  color: '#1E293B', 
+                  margin: '0 0 8px 0',
+                  letterSpacing: '-0.2px' 
+                }}
+              >
+                No appointments.
+              </h3>
 
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#012741' }}>{apt.doctor}</h4>
-                          {isFollowUp && (
-                            <span style={{
-                              background: '#E8F8F3',
-                              color: '#047857',
-                              fontSize: '10px',
-                              fontWeight: '800',
-                              padding: '2px 6px',
-                              borderRadius: '6px'
-                            }}>
-                              FOLLOW-UP
-                            </span>
-                          )}
-                        </div>
-                        <p style={{ fontSize: '11px', color: '#056DB4', fontWeight: '600' }}>{apt.specialty}</p>
-                      </div>
-                    </div>
+              <p 
+                style={{ 
+                  fontSize: '13.5px', 
+                  color: '#334155', 
+                  margin: 0,
+                  maxWidth: '280px',
+                  lineHeight: 1.4,
+                  fontWeight: '500'
+                }}
+              >
+                {activeTab === 'Upcoming' && "You don't have a doctor's appointment scheduled at the moment."}
+                {activeTab === 'Completed' && "No Completed Appointments"}
+                {activeTab === 'Cancelled' && "No Cancelled Appointments"}
+              </p>
+            </div>
+          ) : (
+            /* Appointments Card List */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {kidAppointments.map((apt) => {
+                const isUpcoming = apt.type === 'UPCOMING';
+                const isFollowUp = apt.type === 'FOLLOW_UP';
+                const isCompleted = apt.type === 'COMPLETED';
+                const isCancelled = apt.type === 'CANCELLED';
 
-                    <span style={{
-                      fontSize: '11px',
-                      fontWeight: '800',
-                      padding: '3px 8px',
-                      borderRadius: '10px',
-                      background: isUpcoming ? '#E8F8F3' : isFollowUp ? '#E6FFFA' : isCompleted ? '#EBF4FA' : '#FDE8EC',
-                      color: isUpcoming ? '#3AA17E' : isFollowUp ? '#0D9488' : isCompleted ? '#056DB4' : '#F94C66'
-                    }}>
-                      {apt.status}
-                    </span>
-                  </div>
-
-                  {/* Follow-up Reason & Previous Ref if applicable */}
-                  {apt.followUpReason && (
-                    <div style={{
-                      background: '#F0FDF4',
-                      border: '1px solid #BBF7D0',
-                      borderRadius: '12px',
-                      padding: '8px 12px',
-                      fontSize: '11.5px',
-                      color: '#166534',
+                return (
+                  <div
+                    key={apt.id}
+                    style={{
+                      background: '#FFFFFF',
+                      borderRadius: '18px',
+                      padding: '14px 16px',
+                      border: isFollowUp ? '1.5px solid #A7F3D0' : '1px solid #E2E8F0',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}>
-                      <RotateCcw size={13} color="#166534" />
-                      <span><strong>Follow-up Goal:</strong> {apt.followUpReason}</span>
-                    </div>
-                  )}
+                      flexDirection: 'column',
+                      gap: '12px'
+                    }}
+                  >
+                    {/* Doctor Info Row & Status Tag */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div 
+                          style={{
+                            width: '46px',
+                            height: '46px',
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            border: '1.5px solid #CBD5E1',
+                            flexShrink: 0
+                          }}
+                        >
+                          <img 
+                            src={apt.doctorAvatar || "/assets/dr_ila_b.png"} 
+                            alt={apt.doctor || "Doctor"}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => {
+                              e.target.src = '/assets/nurse.png';
+                            }}
+                          />
+                        </div>
 
-                  {/* Date, Time & Mode info box */}
-                  <div style={{
-                    background: '#F8FAFC',
-                    padding: '10px 14px',
-                    borderRadius: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    fontSize: '12px',
-                    color: '#334155'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={14} color="#056DB4" />
-                      <strong style={{ color: '#012741' }}>{apt.timestamp}</strong>
-                    </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#1E293B', margin: 0 }}>
+                              {apt.doctor || 'Dr. Ila Binaykia'}
+                            </h4>
+                            {isFollowUp && (
+                              <span 
+                                style={{
+                                  background: '#E8F8F3',
+                                  color: '#047857',
+                                  fontSize: '9.5px',
+                                  fontWeight: '800',
+                                  padding: '2px 6px',
+                                  borderRadius: '6px'
+                                }}
+                              >
+                                FOLLOW-UP
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontSize: '12px', color: '#056DB5', margin: '2px 0 0 0', fontWeight: '600' }}>
+                            {apt.specialty || 'Senior Pediatrician'}
+                          </p>
+                        </div>
+                      </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#64748B' }}>
-                      {apt.mode.includes('Video') ? <Video size={14} color="#53BF9D" /> : <MapPin size={14} color="#F7931E" />}
-                      <span>{apt.mode.includes('Video') ? 'Online Video' : 'In-Clinic'}</span>
-                    </div>
-                  </div>
-
-                  {/* Symptoms list */}
-                  {apt.symptoms && apt.symptoms.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                      {apt.symptoms.map((sym, i) => (
-                        <span key={i} style={{
+                      <span 
+                        style={{
                           fontSize: '11px',
-                          background: '#F1F5F9',
-                          color: '#475569',
+                          fontWeight: '700',
                           padding: '3px 8px',
                           borderRadius: '8px',
-                          fontWeight: '600'
-                        }}>
-                          {sym}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #F1F5F9', paddingTop: '10px' }}>
-                    {(isUpcoming || isFollowUp) && (
-                      <button
-                        onClick={() => openModal('live-consultation', apt)}
-                        className="btn-green"
-                        style={{ flex: 1, padding: '10px 14px', borderRadius: '14px', fontSize: '13px', fontWeight: '700' }}
+                          background: isUpcoming ? '#E8F8F3' : isFollowUp ? '#E6FFFA' : isCompleted ? '#EBF4FA' : '#FDE8EC',
+                          color: isUpcoming ? '#3AA17E' : isFollowUp ? '#0D9488' : isCompleted ? '#056DB5' : '#F94C66'
+                        }}
                       >
-                        <Video size={16} /> {isFollowUp ? 'Join Follow-Up Call' : 'Join Video Call'}
-                      </button>
+                        {apt.status || (isUpcoming ? 'Confirmed' : isCompleted ? 'Completed' : 'Cancelled')}
+                      </span>
+                    </div>
+
+                    {/* Follow-up Note */}
+                    {apt.followUpReason && (
+                      <div 
+                        style={{
+                          background: '#F0FDF4',
+                          border: '1px solid #BBF7D0',
+                          borderRadius: '10px',
+                          padding: '8px 12px',
+                          fontSize: '11.5px',
+                          color: '#166534',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <RotateCcw size={13} color="#166534" />
+                        <span><strong>Follow-up Goal:</strong> {apt.followUpReason}</span>
+                      </div>
                     )}
 
-                    <button
-                      onClick={() => openModal('appointment-detail', apt)}
+                    {/* Date, Time & Consultation Mode */}
+                    <div 
                       style={{
-                        flex: (isUpcoming || isFollowUp) ? 0.6 : 1,
-                        background: '#F1F5F9',
-                        border: 'none',
-                        borderRadius: '14px',
-                        padding: '10px',
-                        color: '#334155',
-                        fontSize: '12px',
-                        fontWeight: '700',
-                        cursor: 'pointer',
+                        background: '#F8FAFC',
+                        padding: '10px 12px',
+                        borderRadius: '12px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px'
+                        justifyContent: 'space-between',
+                        fontSize: '12px',
+                        color: '#334155'
                       }}
                     >
-                      View Details <ChevronRight size={14} />
-                    </button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Clock size={14} color="#056DB5" />
+                        <strong style={{ color: '#0F172A' }}>{apt.timestamp || `${apt.date}, ${apt.time}`}</strong>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#64748B' }}>
+                        {apt.mode?.includes('Video') ? <Video size={14} color="#53BF9D" /> : <MapPin size={14} color="#F7931E" />}
+                        <span>{apt.mode?.includes('Video') ? 'Online Video' : 'In-Clinic'}</span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #F1F5F9', paddingTop: '10px' }}>
+                      {(isUpcoming || isFollowUp) && apt.mode?.includes('Video') && (
+                        <button
+                          onClick={() => openModal('live-consultation', apt)}
+                          className="btn-primary"
+                          style={{ flex: 1, padding: '9px 12px', borderRadius: '12px', fontSize: '12.5px', fontWeight: '700' }}
+                        >
+                          <Video size={15} /> Join Video Call
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => openModal('appointment-detail', apt)}
+                        style={{
+                          flex: (isUpcoming || isFollowUp) && apt.mode?.includes('Video') ? 0.6 : 1,
+                          background: '#F1F5F9',
+                          border: 'none',
+                          borderRadius: '12px',
+                          padding: '9px 12px',
+                          color: '#056DB5',
+                          fontSize: '12.5px',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        View Details <ChevronRight size={14} />
+                      </button>
+                    </div>
+
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+
+        </div>
       </div>
+
+      {/* 4. Bottom Fixed Action Button: "New Appointment" */}
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '12px 16px',
+          background: 'linear-gradient(to top, #FFFFFF 90%, rgba(255,255,255,0))',
+          zIndex: 30
+        }}
+      >
+        <button
+          onClick={() => openModal('new-appointment')}
+          style={{
+            width: '100%',
+            padding: '13px',
+            borderRadius: '24px',
+            border: 'none',
+            background: '#0077D7',
+            color: '#FFFFFF',
+            fontSize: '14.5px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(0, 119, 215, 0.35)',
+            transition: 'transform 0.15s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.02)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          New Appointment
+        </button>
+      </div>
+
     </div>
   );
 };
-

@@ -9,7 +9,7 @@ import { Toast } from './components/common/Toast';
 import { KidCarousel } from './components/home/KidCarousel';
 import { FlipCardSection } from './components/home/FlipCardSection';
 import { UpcomingAppointmentBanner } from './components/home/UpcomingAppointmentBanner';
-import { HealthFeeds } from './components/home/HealthFeeds';
+import { QuickActions } from './components/home/QuickActions';
 
 // Tab Screens
 import { AppointmentsScreen } from './components/appointments/AppointmentsScreen';
@@ -59,9 +59,9 @@ const MainAppContent = () => {
       {activeTab === 'home' && (
         <div className="screen-scroll-container">
           <KidCarousel />
+          <QuickActions />
           <UpcomingAppointmentBanner />
           <FlipCardSection />
-          <HealthFeeds />
         </div>
       )}
 
