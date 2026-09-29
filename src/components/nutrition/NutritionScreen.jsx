@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
   ArrowLeft, 
-  Calendar as CalendarIcon, 
   ChevronRight, 
   ChevronDown,
   Sun, 
@@ -10,7 +9,9 @@ import {
   Moon, 
   Utensils, 
   Coffee,
-  GlassWater
+  GlassWater,
+  Sparkles,
+  HeartHandshake
 } from 'lucide-react';
 import {
   LikesIcon,
@@ -21,99 +22,27 @@ import {
 } from '../common/AndroidIcons';
 
 const WEEK_DAYS = [
-  { key: 'monday', day: 'Mon', date: '29', month: 'Sep' },
-  { key: 'tuesday', day: 'Tue', date: '30', month: 'Sep' },
-  { key: 'wednesday', day: 'Wed', date: '01', month: 'Oct' },
-  { key: 'thursday', day: 'Thu', date: '02', month: 'Oct' },
-  { key: 'friday', day: 'Fri', date: '03', month: 'Oct' },
-  { key: 'saturday', day: 'Sat', date: '04', month: 'Oct' },
-  { key: 'sunday', day: 'Sun', date: '05', month: 'Oct' }
+  { key: 'monday', day: 'Mon', fullName: 'Monday' },
+  { key: 'tuesday', day: 'Tue', fullName: 'Tuesday' },
+  { key: 'wednesday', day: 'Wed', fullName: 'Wednesday' },
+  { key: 'thursday', day: 'Thu', fullName: 'Thursday' },
+  { key: 'friday', day: 'Fri', fullName: 'Friday' },
+  { key: 'saturday', day: 'Sat', fullName: 'Saturday' },
+  { key: 'sunday', day: 'Sun', fullName: 'Sunday' }
 ];
 
 const MEAL_SCHEDULE_BY_DAY = {
-  tuesday: [
-    {
-      id: 'tue-m1',
-      title: 'Early Morning',
-      time: '7:00 AM',
-      nodeType: 'sun',
-      nodeColor: '#FBBF24',
-      image: '/assets/rice_bowl_1.png',
-      items: [
-        { name: 'Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
-      ]
-    },
-    {
-      id: 'tue-m2',
-      title: 'Breakfast',
-      time: '8:30 AM',
-      nodeType: 'sunrise',
-      nodeColor: '#F97316',
-      image: '/assets/glass_full_fresh_milk_1.png',
-      items: [
-        { name: 'Sooji Chilla', icon: 'plate', quantity: '1 pcs' },
-        { name: 'Tomato Chutney', icon: 'cutlery', quantity: '1 tbsp' }
-      ]
-    },
-    {
-      id: 'tue-m3',
-      title: 'Mid-morning snacks',
-      time: '11:00 AM',
-      nodeType: 'moon',
-      nodeColor: '#22C55E',
-      image: '/assets/rice_bowl_1.png',
-      items: [
-        { name: 'Banana', icon: 'banana', quantity: '1 pcs' }
-      ]
-    },
-    {
-      id: 'tue-m4',
-      title: 'Lunch',
-      time: '1:30 PM',
-      nodeType: 'utensils',
-      nodeColor: '#056DB5',
-      image: '/assets/rice_bowl_1.png',
-      items: [
-        { name: 'Veg Rice Khichdi', icon: 'bowl', quantity: '0.5 bowl' },
-        { name: 'Aloo Chokha', icon: 'bowl', quantity: '0.5 bowl' },
-        { name: 'Curd (cow milk)', icon: 'bowl', quantity: '0.5 bowl' }
-      ]
-    },
-    {
-      id: 'tue-m5',
-      title: 'Evening snacks',
-      time: '5:30 PM',
-      nodeType: 'coffee',
-      nodeColor: '#8B5CF6',
-      image: '/assets/lentil_salad.png',
-      items: [
-        { name: 'Milk (cow)', icon: 'glass', quantity: '1 glass' },
-        { name: 'Oats Pancake', icon: 'plate', quantity: '1 pc' }
-      ]
-    },
-    {
-      id: 'tue-m6',
-      title: 'Dinner',
-      time: '8:00 PM',
-      nodeType: 'night',
-      nodeColor: '#1E293B',
-      image: '/assets/lunch.png',
-      items: [
-        { name: 'Daliya Khichdi', icon: 'bowl', quantity: '0.5 bowl' },
-        { name: 'Aloo Chokha', icon: 'bowl', quantity: '0.5 bowl' }
-      ]
-    }
-  ],
   monday: [
     {
       id: 'mon-m1',
       title: 'Early Morning',
       time: '7:00 AM',
       nodeType: 'sun',
-      nodeColor: '#FBBF24',
+      nodeColor: '#F59E0B',
+      tag: 'Energy & Calcium',
       image: '/assets/rice_bowl_1.png',
       items: [
-        { name: 'Warm Almond Milk', icon: 'glass', quantity: '0.5 glass' }
+        { name: 'Warm Almond Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
       ]
     },
     {
@@ -121,11 +50,12 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Breakfast',
       time: '8:30 AM',
       nodeType: 'sunrise',
-      nodeColor: '#F97316',
+      nodeColor: '#EA580C',
+      tag: 'Protein & Fiber',
       image: '/assets/glass_full_fresh_milk_1.png',
       items: [
         { name: 'Soft Wheat Toast', icon: 'plate', quantity: '2 pcs' },
-        { name: 'Boiled Egg / Paneer', icon: 'cutlery', quantity: '1 pc' }
+        { name: 'Paneer Mash', icon: 'cutlery', quantity: '1 bowl' }
       ]
     },
     {
@@ -133,7 +63,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Mid-morning snacks',
       time: '11:00 AM',
       nodeType: 'moon',
-      nodeColor: '#22C55E',
+      nodeColor: '#16A34A',
+      tag: 'Vitamins & Minerals',
       image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Apple Puree', icon: 'bowl', quantity: '1 bowl' }
@@ -145,6 +76,7 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '1:30 PM',
       nodeType: 'utensils',
       nodeColor: '#056DB5',
+      tag: 'Wholesome Nutrition',
       image: '/assets/lunch.png',
       items: [
         { name: 'Moong Dal Khichdi', icon: 'bowl', quantity: '0.5 bowl' },
@@ -157,10 +89,11 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '5:30 PM',
       nodeType: 'coffee',
       nodeColor: '#8B5CF6',
+      tag: 'Light Refuel',
       image: '/assets/lentil_salad.png',
       items: [
         { name: 'Cow Milk', icon: 'glass', quantity: '1 glass' },
-        { name: 'Makhana Snack', icon: 'bowl', quantity: '1 cup' }
+        { name: 'Roasted Makhana', icon: 'bowl', quantity: '1 cup' }
       ]
     },
     {
@@ -169,9 +102,89 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '8:00 PM',
       nodeType: 'night',
       nodeColor: '#1E293B',
-      image: '/assets/lunch.png',
+      tag: 'Easy Digestion',
+      image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Vegetable Dalia', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    }
+  ],
+  tuesday: [
+    {
+      id: 'tue-m1',
+      title: 'Early Morning',
+      time: '7:00 AM',
+      nodeType: 'sun',
+      nodeColor: '#F59E0B',
+      tag: 'Calcium Starter',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
+      ]
+    },
+    {
+      id: 'tue-m2',
+      title: 'Breakfast',
+      time: '8:30 AM',
+      nodeType: 'sunrise',
+      nodeColor: '#EA580C',
+      tag: 'Iron & Carbohydrates',
+      image: '/assets/glass_full_fresh_milk_1.png',
+      items: [
+        { name: 'Sooji Chilla', icon: 'plate', quantity: '1 pcs' },
+        { name: 'Tomato Chutney', icon: 'cutlery', quantity: '1 tbsp' }
+      ]
+    },
+    {
+      id: 'tue-m3',
+      title: 'Mid-morning snacks',
+      time: '11:00 AM',
+      nodeType: 'moon',
+      nodeColor: '#16A34A',
+      tag: 'Natural Potassium',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Banana', icon: 'banana', quantity: '1 pcs' }
+      ]
+    },
+    {
+      id: 'tue-m4',
+      title: 'Lunch',
+      time: '1:30 PM',
+      nodeType: 'utensils',
+      nodeColor: '#056DB5',
+      tag: 'Complete Meal',
+      image: '/assets/lunch.png',
+      items: [
+        { name: 'Veg Rice Khichdi', icon: 'bowl', quantity: '0.5 bowl' },
+        { name: 'Aloo Chokha', icon: 'bowl', quantity: '0.5 bowl' },
+        { name: 'Curd (cow milk)', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'tue-m5',
+      title: 'Evening snacks',
+      time: '5:30 PM',
+      nodeType: 'coffee',
+      nodeColor: '#8B5CF6',
+      tag: 'Fiber & Energy',
+      image: '/assets/lentil_salad.png',
+      items: [
+        { name: 'Milk (cow)', icon: 'glass', quantity: '1 glass' },
+        { name: 'Oats Pancake', icon: 'plate', quantity: '1 pc' }
+      ]
+    },
+    {
+      id: 'tue-m6',
+      title: 'Dinner',
+      time: '8:00 PM',
+      nodeType: 'night',
+      nodeColor: '#1E293B',
+      tag: 'Calm Night Digestion',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Daliya Khichdi', icon: 'bowl', quantity: '0.5 bowl' },
+        { name: 'Aloo Chokha', icon: 'bowl', quantity: '0.5 bowl' }
       ]
     }
   ],
@@ -181,7 +194,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Early Morning',
       time: '7:00 AM',
       nodeType: 'sun',
-      nodeColor: '#FBBF24',
+      nodeColor: '#F59E0B',
+      tag: 'Hydration Starter',
       image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
@@ -192,7 +206,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Breakfast',
       time: '8:30 AM',
       nodeType: 'sunrise',
-      nodeColor: '#F97316',
+      nodeColor: '#EA580C',
+      tag: 'Calcium & Iron',
       image: '/assets/glass_full_fresh_milk_1.png',
       items: [
         { name: 'Ragi Idli', icon: 'plate', quantity: '2 pcs' },
@@ -204,7 +219,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Mid-morning snacks',
       time: '11:00 AM',
       nodeType: 'moon',
-      nodeColor: '#22C55E',
+      nodeColor: '#16A34A',
+      tag: 'Fiber Boost',
       image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Mashed Pear', icon: 'bowl', quantity: '0.5 bowl' }
@@ -216,7 +232,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '1:30 PM',
       nodeType: 'utensils',
       nodeColor: '#056DB5',
-      image: '/assets/rice_bowl_1.png',
+      tag: 'Probiotic Rich',
+      image: '/assets/lunch.png',
       items: [
         { name: 'Curd Rice Mash', icon: 'bowl', quantity: '0.5 bowl' },
         { name: 'Pumpkin Puree', icon: 'bowl', quantity: '0.5 bowl' }
@@ -228,6 +245,7 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '5:30 PM',
       nodeType: 'coffee',
       nodeColor: '#8B5CF6',
+      tag: 'Whole Grains',
       image: '/assets/lentil_salad.png',
       items: [
         { name: 'Milk (cow)', icon: 'glass', quantity: '1 glass' },
@@ -240,7 +258,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '8:00 PM',
       nodeType: 'night',
       nodeColor: '#1E293B',
-      image: '/assets/lunch.png',
+      tag: 'Gentle on Gut',
+      image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Soft Rice Khichdi', icon: 'bowl', quantity: '0.5 bowl' }
       ]
@@ -252,7 +271,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Early Morning',
       time: '7:00 AM',
       nodeType: 'sun',
-      nodeColor: '#FBBF24',
+      nodeColor: '#F59E0B',
+      tag: 'Fresh Start',
       image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
@@ -263,7 +283,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Breakfast',
       time: '8:30 AM',
       nodeType: 'sunrise',
-      nodeColor: '#F97316',
+      nodeColor: '#EA580C',
+      tag: 'Light & Nutritious',
       image: '/assets/glass_full_fresh_milk_1.png',
       items: [
         { name: 'Poha with Veggies', icon: 'plate', quantity: '1 bowl' }
@@ -274,7 +295,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       title: 'Mid-morning snacks',
       time: '11:00 AM',
       nodeType: 'moon',
-      nodeColor: '#22C55E',
+      nodeColor: '#16A34A',
+      tag: 'Vitamin C & A',
       image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Papaya Cubes', icon: 'banana', quantity: '0.5 bowl' }
@@ -286,7 +308,8 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '1:30 PM',
       nodeType: 'utensils',
       nodeColor: '#056DB5',
-      image: '/assets/rice_bowl_1.png',
+      tag: 'Protein & Carbs',
+      image: '/assets/lunch.png',
       items: [
         { name: 'Rice & Yellow Dal', icon: 'bowl', quantity: '0.5 bowl' },
         { name: 'Aloo Bharta', icon: 'bowl', quantity: '0.5 bowl' }
@@ -298,6 +321,7 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '5:30 PM',
       nodeType: 'coffee',
       nodeColor: '#8B5CF6',
+      tag: 'Healthy Crunch',
       image: '/assets/lentil_salad.png',
       items: [
         { name: 'Milk (cow)', icon: 'glass', quantity: '1 glass' },
@@ -310,9 +334,240 @@ const MEAL_SCHEDULE_BY_DAY = {
       time: '8:00 PM',
       nodeType: 'night',
       nodeColor: '#1E293B',
-      image: '/assets/lunch.png',
+      tag: 'Warm & Soothing',
+      image: '/assets/rice_bowl_1.png',
       items: [
         { name: 'Lentil Veggie Soup', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    }
+  ],
+  friday: [
+    {
+      id: 'fri-m1',
+      title: 'Early Morning',
+      time: '7:00 AM',
+      nodeType: 'sun',
+      nodeColor: '#F59E0B',
+      tag: 'Calcium Boost',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Warm Milk', icon: 'glass', quantity: '0.5 glass' }
+      ]
+    },
+    {
+      id: 'fri-m2',
+      title: 'Breakfast',
+      time: '8:30 AM',
+      nodeType: 'sunrise',
+      nodeColor: '#EA580C',
+      tag: 'Protein Rich',
+      image: '/assets/glass_full_fresh_milk_1.png',
+      items: [
+        { name: 'Moong Dal Cheela', icon: 'plate', quantity: '1 pc' },
+        { name: 'Curd Dip', icon: 'bowl', quantity: '1 tbsp' }
+      ]
+    },
+    {
+      id: 'fri-m3',
+      title: 'Mid-morning snacks',
+      time: '11:00 AM',
+      nodeType: 'moon',
+      nodeColor: '#16A34A',
+      tag: 'Vitamin Rich',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Chikoo Mash', icon: 'banana', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'fri-m4',
+      title: 'Lunch',
+      time: '1:30 PM',
+      nodeType: 'utensils',
+      nodeColor: '#056DB5',
+      tag: 'Iron & Folate',
+      image: '/assets/lunch.png',
+      items: [
+        { name: 'Palak Rice', icon: 'bowl', quantity: '0.5 bowl' },
+        { name: 'Toor Dal Tadka', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'fri-m5',
+      title: 'Evening snacks',
+      time: '5:30 PM',
+      nodeType: 'coffee',
+      nodeColor: '#8B5CF6',
+      tag: 'Hydration',
+      image: '/assets/lentil_salad.png',
+      items: [
+        { name: 'Cow Milk', icon: 'glass', quantity: '1 glass' },
+        { name: 'Roasted Foxnuts', icon: 'bowl', quantity: '1 cup' }
+      ]
+    },
+    {
+      id: 'fri-m6',
+      title: 'Dinner',
+      time: '8:00 PM',
+      nodeType: 'night',
+      nodeColor: '#1E293B',
+      tag: 'Gentle Khichdi',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Carrot & Moong Khichdi', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    }
+  ],
+  saturday: [
+    {
+      id: 'sat-m1',
+      title: 'Early Morning',
+      time: '7:00 AM',
+      nodeType: 'sun',
+      nodeColor: '#F59E0B',
+      tag: 'Morning Hydration',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
+      ]
+    },
+    {
+      id: 'sat-m2',
+      title: 'Breakfast',
+      time: '8:30 AM',
+      nodeType: 'sunrise',
+      nodeColor: '#EA580C',
+      tag: 'Carb & Fiber',
+      image: '/assets/glass_full_fresh_milk_1.png',
+      items: [
+        { name: 'Vegetable Upma', icon: 'plate', quantity: '1 bowl' }
+      ]
+    },
+    {
+      id: 'sat-m3',
+      title: 'Mid-morning snacks',
+      time: '11:00 AM',
+      nodeType: 'moon',
+      nodeColor: '#16A34A',
+      tag: 'Natural Sweetness',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Sweet Mango Puree', icon: 'banana', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'sat-m4',
+      title: 'Lunch',
+      time: '1:30 PM',
+      nodeType: 'utensils',
+      nodeColor: '#056DB5',
+      tag: 'Weekend Special',
+      image: '/assets/lunch.png',
+      items: [
+        { name: 'Jeera Rice & Dal', icon: 'bowl', quantity: '0.5 bowl' },
+        { name: 'Lauki (Bottle Gourd) Mash', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'sat-m5',
+      title: 'Evening snacks',
+      time: '5:30 PM',
+      nodeType: 'coffee',
+      nodeColor: '#8B5CF6',
+      tag: 'Wholesome Refuel',
+      image: '/assets/lentil_salad.png',
+      items: [
+        { name: 'Cow Milk', icon: 'glass', quantity: '1 glass' },
+        { name: 'Steamed Sweet Corn Mash', icon: 'bowl', quantity: '0.5 cup' }
+      ]
+    },
+    {
+      id: 'sat-m6',
+      title: 'Dinner',
+      time: '8:00 PM',
+      nodeType: 'night',
+      nodeColor: '#1E293B',
+      tag: 'Soothing Sleep Prep',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Oats & Veggie Porridge', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    }
+  ],
+  sunday: [
+    {
+      id: 'sun-m1',
+      title: 'Early Morning',
+      time: '7:00 AM',
+      nodeType: 'sun',
+      nodeColor: '#F59E0B',
+      tag: 'Morning Nutrition',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Almond Milk (cow)', icon: 'glass', quantity: '0.5 glass' }
+      ]
+    },
+    {
+      id: 'sun-m2',
+      title: 'Breakfast',
+      time: '8:30 AM',
+      nodeType: 'sunrise',
+      nodeColor: '#EA580C',
+      tag: 'Soft & Fluffy',
+      image: '/assets/glass_full_fresh_milk_1.png',
+      items: [
+        { name: 'Soft Rice Idli', icon: 'plate', quantity: '2 pcs' },
+        { name: 'Mild Sambar Soup', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'sun-m3',
+      title: 'Mid-morning snacks',
+      time: '11:00 AM',
+      nodeType: 'moon',
+      nodeColor: '#16A34A',
+      tag: 'Fresh Fruit',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Banana Slice Mash', icon: 'banana', quantity: '1 pc' }
+      ]
+    },
+    {
+      id: 'sun-m4',
+      title: 'Lunch',
+      time: '1:30 PM',
+      nodeType: 'utensils',
+      nodeColor: '#056DB5',
+      tag: 'Balanced Sunday Feast',
+      image: '/assets/lunch.png',
+      items: [
+        { name: 'Panchmel Dal Khichdi', icon: 'bowl', quantity: '0.5 bowl' },
+        { name: 'Homemade Curd', icon: 'bowl', quantity: '0.5 bowl' }
+      ]
+    },
+    {
+      id: 'sun-m5',
+      title: 'Evening snacks',
+      time: '5:30 PM',
+      nodeType: 'coffee',
+      nodeColor: '#8B5CF6',
+      tag: 'Warm & Cozy',
+      image: '/assets/lentil_salad.png',
+      items: [
+        { name: 'Warm Milk', icon: 'glass', quantity: '1 glass' },
+        { name: 'Wheat Pancake', icon: 'plate', quantity: '1 pc' }
+      ]
+    },
+    {
+      id: 'sun-m6',
+      title: 'Dinner',
+      time: '8:00 PM',
+      nodeType: 'night',
+      nodeColor: '#1E293B',
+      tag: 'Easy Digest Supper',
+      image: '/assets/rice_bowl_1.png',
+      items: [
+        { name: 'Vegetable Dalia Khichdi', icon: 'bowl', quantity: '0.5 bowl' }
       ]
     }
   ]
@@ -324,6 +579,7 @@ export const NutritionScreen = () => {
   const [isMealPreferencesOpen, setIsMealPreferencesOpen] = useState(true);
 
   const mealsList = MEAL_SCHEDULE_BY_DAY[selectedDayKey] || MEAL_SCHEDULE_BY_DAY.tuesday;
+  const activeDayObj = WEEK_DAYS.find(w => w.key === selectedDayKey) || WEEK_DAYS[1];
 
   const renderTimelineNodeIcon = (nodeType) => {
     switch (nodeType) {
@@ -346,7 +602,7 @@ export const NutritionScreen = () => {
   const renderPortionIcon = (iconType) => {
     switch (iconType) {
       case 'glass':
-        return <GlassWater size={16} color="#056DB5" style={{ flexShrink: 0 }} />;
+        return <GlassWater size={15} color="#056DB5" style={{ flexShrink: 0 }} />;
       case 'plate':
         return <span style={{ fontSize: '13px', lineHeight: 1 }}>🥣</span>;
       case 'cutlery':
@@ -365,104 +621,113 @@ export const NutritionScreen = () => {
       style={{ 
         background: '#FAF9F7', 
         minHeight: '100%', 
-        paddingBottom: '85px',
+        paddingBottom: '90px',
         overflowX: 'hidden'
       }}
     >
-      {/* 1. Top Header: Back Arrow + Child Avatar & Details + Appointments Shortcut */}
+      {/* 1. Header Bar: Back Arrow + Child Banner */}
       <div 
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '16px 16px 12px',
+          padding: '14px 18px 12px',
           background: '#FFFFFF',
-          borderBottom: '1px solid #EEF2F6'
+          borderBottom: '1px solid #EEF2F6',
+          position: 'sticky',
+          top: 0,
+          zIndex: 20
         }}
       >
-        <button
-          onClick={() => setActiveTab('home')}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: '4px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#1E293B'
-          }}
-          title="Back to Home"
-        >
-          <ArrowLeft size={24} color="#1E293B" />
-        </button>
-
-        {/* Child Profile Info (Clickable to switch kid) */}
-        <div 
-          onClick={() => openModal('kid-selector')}
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '12px',
-            cursor: 'pointer' 
-          }}
-        >
-          <div 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={() => setActiveTab('home')}
             style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              background: '#FFFFFF',
-              border: '2px solid #E2E8F0',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
-              flexShrink: 0
+              background: 'none',
+              border: 'none',
+              padding: '2px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#0F172A'
+            }}
+            title="Back to Home"
+          >
+            <ArrowLeft size={22} color="#0F172A" />
+          </button>
+
+          {/* Child Profile Info (Clickable to switch kid) */}
+          <div 
+            onClick={() => openModal('kid-selector')}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px',
+              cursor: 'pointer' 
             }}
           >
-            <img 
-              src={currentKid?.photo || "/assets/kid1_1.png"} 
-              alt={currentKid?.name || "Child"} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/assets/kid1_1.png';
+            <div 
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                background: '#FFFFFF',
+                border: '2px solid #056DB5',
+                boxShadow: '0 2px 6px rgba(5, 109, 181, 0.15)',
+                flexShrink: 0
               }}
-            />
-          </div>
+            >
+              <img 
+                src={currentKid?.photo || "/assets/kid1_1.png"} 
+                alt={currentKid?.name || "Child"} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/assets/kid1_1.png';
+                }}
+              />
+            </div>
 
-          <div>
-            <h2 
-              style={{ 
-                fontSize: '16px', 
-                fontWeight: '800', 
-                color: '#0F172A', 
-                margin: 0,
-                lineHeight: 1.2 
-              }}
-            >
-              {currentKid?.name || 'Reyansh Sharma'}
-            </h2>
-            <p 
-              style={{ 
-                fontSize: '11.5px', 
-                color: '#64748B', 
-                margin: '2px 0 0 0',
-                fontWeight: '500' 
-              }}
-            >
-              {currentKid?.age || '2 years 8 months'}
-            </p>
+            <div>
+              <h2 
+                style={{ 
+                  fontSize: '15.5px', 
+                  fontWeight: '800', 
+                  color: '#0F172A', 
+                  margin: 0,
+                  lineHeight: 1.2 
+                }}
+              >
+                {currentKid?.name || 'Reyansh Sharma'}
+              </h2>
+              <p 
+                style={{ 
+                  fontSize: '11px', 
+                  color: '#64748B', 
+                  margin: '1px 0 0 0',
+                  fontWeight: '600' 
+                }}
+              >
+                Age: {currentKid?.age || '1 yr 5 mos'} • Diet Plan
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* Veg Badge on Header */}
+        <VegBadgeIcon width={17} />
       </div>
 
-      {/* 2. Weekday Date Selector Pills */}
+      {/* 2. Weekday-Only Selector Strip (Mon, Tue, Wed, Thu, Fri, Sat, Sun - NO DATES/MONTHS) */}
       <div 
         style={{
           display: 'flex',
           gap: '8px',
           overflowX: 'auto',
-          padding: '12px 16px 14px',
+          padding: '12px 16px',
+          background: '#FAF9F7',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
         }}
@@ -475,51 +740,27 @@ export const NutritionScreen = () => {
               onClick={() => setSelectedDayKey(d.key)}
               style={{
                 flex: '0 0 auto',
-                minWidth: '56px',
-                padding: '8px 4px',
-                borderRadius: '16px',
-                border: isSelected ? 'none' : '1px solid #E2E8F0',
-                background: isSelected ? '#0077D7' : '#FFFFFF',
-                color: isSelected ? '#FFFFFF' : '#64748B',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '2px',
+                padding: '9px 18px',
+                borderRadius: '24px',
+                border: isSelected ? 'none' : '1.5px solid #E2E8F0',
+                background: isSelected 
+                  ? 'linear-gradient(135deg, #056DB5 0%, #034D80 100%)' 
+                  : '#FFFFFF',
+                color: isSelected ? '#FFFFFF' : '#475569',
+                fontSize: '13px',
+                fontWeight: isSelected ? '800' : '700',
                 cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 boxShadow: isSelected 
-                  ? '0 4px 12px rgba(0, 119, 215, 0.35)' 
-                  : '0 1px 3px rgba(0,0,0,0.02)',
-                transition: 'all 0.18s ease'
+                  ? '0 4px 14px rgba(5, 109, 181, 0.35)' 
+                  : '0 1px 3px rgba(0,0,0,0.03)',
+                transition: 'all 0.18s cubic-bezier(0.4, 0, 0.2, 1)',
+                outline: 'none'
               }}
             >
-              <span 
-                style={{ 
-                  fontSize: '11px', 
-                  fontWeight: isSelected ? '700' : '600',
-                  color: isSelected ? '#FFFFFF' : '#64748B' 
-                }}
-              >
-                {d.day}
-              </span>
-              <span 
-                style={{ 
-                  fontSize: '15px', 
-                  fontWeight: '800',
-                  color: isSelected ? '#FFFFFF' : '#0F172A' 
-                }}
-              >
-                {d.date}
-              </span>
-              <span 
-                style={{ 
-                  fontSize: '9px', 
-                  fontWeight: '600',
-                  color: isSelected ? 'rgba(255,255,255,0.85)' : '#94A3B8',
-                  textTransform: 'uppercase'
-                }}
-              >
-                {d.month}
-              </span>
+              {d.day}
             </button>
           );
         })}
@@ -528,26 +769,26 @@ export const NutritionScreen = () => {
       {/* Main Section Content */}
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* 3. Meal Preferences Section with Proper Padding and Header */}
+        {/* 3. Meal Preferences Section with Animated Toggle */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           
-          {/* Header Row: Title + Toggle Chevron + Official VEG Badge */}
+          {/* Header Row: Title + Toggle Chevron */}
           <div 
             onClick={() => setIsMealPreferencesOpen(!isMealPreferencesOpen)}
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'space-between',
-              padding: '2px 0',
+              padding: '4px 2px',
               cursor: 'pointer',
               userSelect: 'none'
             }}
             title={isMealPreferencesOpen ? "Collapse Meal Preferences" : "Expand Meal Preferences"}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <h3 
                 style={{ 
-                  fontSize: '17px', 
+                  fontSize: '16.5px', 
                   fontWeight: '800', 
                   color: '#056DB5', 
                   margin: 0,
@@ -557,7 +798,6 @@ export const NutritionScreen = () => {
                 Meal Preferences
               </h3>
 
-              {/* Rotating Arrow Indicator */}
               <div 
                 style={{ 
                   transform: isMealPreferencesOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
@@ -571,8 +811,9 @@ export const NutritionScreen = () => {
               </div>
             </div>
 
-            {/* Official VEG Symbol Badge */}
-            <VegBadgeIcon width={18} />
+            <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '600' }}>
+              4 Tracked Tags
+            </span>
           </div>
 
           {/* 4 Clean Preference Cards Matching Android Vectors */}
@@ -596,16 +837,14 @@ export const NutritionScreen = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s ease'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div 
                     style={{
-                      width: '44px',
-                      height: '44px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '12px',
                       background: '#ECFDF5',
                       display: 'flex',
@@ -617,10 +856,10 @@ export const NutritionScreen = () => {
                     <LikesIcon size={26} />
                   </div>
                   <div>
-                    <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '500', display: 'block' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600', display: 'block' }}>
                       Likes
                     </span>
-                    <span style={{ fontSize: '15px', color: '#0F172A', fontWeight: '700', display: 'block', marginTop: '1px' }}>
+                    <span style={{ fontSize: '14.5px', color: '#0F172A', fontWeight: '800', display: 'block', marginTop: '1px' }}>
                       Banana
                     </span>
                   </div>
@@ -639,16 +878,14 @@ export const NutritionScreen = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s ease'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div 
                     style={{
-                      width: '44px',
-                      height: '44px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '12px',
                       background: '#FFF1F2',
                       display: 'flex',
@@ -660,10 +897,10 @@ export const NutritionScreen = () => {
                     <DislikesIcon size={26} />
                   </div>
                   <div>
-                    <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '500', display: 'block' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600', display: 'block' }}>
                       Dislikes
                     </span>
-                    <span style={{ fontSize: '15px', color: '#0F172A', fontWeight: '700', display: 'block', marginTop: '1px' }}>
+                    <span style={{ fontSize: '14.5px', color: '#0F172A', fontWeight: '800', display: 'block', marginTop: '1px' }}>
                       Papaya
                     </span>
                   </div>
@@ -682,16 +919,14 @@ export const NutritionScreen = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s ease'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div 
                     style={{
-                      width: '44px',
-                      height: '44px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '12px',
                       background: '#FEF3C7',
                       display: 'flex',
@@ -703,10 +938,10 @@ export const NutritionScreen = () => {
                     <AllergyFoodIcon size={26} />
                   </div>
                   <div>
-                    <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '500', display: 'block' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600', display: 'block' }}>
                       Allergy Food
                     </span>
-                    <span style={{ fontSize: '14.5px', color: '#0F172A', fontWeight: '700', display: 'block', marginTop: '1px' }}>
+                    <span style={{ fontSize: '14.5px', color: '#0F172A', fontWeight: '800', display: 'block', marginTop: '1px' }}>
                       Not Specified
                     </span>
                   </div>
@@ -725,16 +960,14 @@ export const NutritionScreen = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s ease'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div 
                     style={{
-                      width: '44px',
-                      height: '44px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '12px',
                       background: '#EFF6FF',
                       display: 'flex',
@@ -746,10 +979,10 @@ export const NutritionScreen = () => {
                     <MedicalIllIcon size={26} />
                   </div>
                   <div>
-                    <span style={{ fontSize: '11.5px', color: '#64748B', fontWeight: '500', display: 'block' }}>
+                    <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600', display: 'block' }}>
                       Medical Issues
                     </span>
-                    <span style={{ fontSize: '14.5px', color: '#0F172A', fontWeight: '700', display: 'block', marginTop: '1px' }}>
+                    <span style={{ fontSize: '14.5px', color: '#0F172A', fontWeight: '800', display: 'block', marginTop: '1px' }}>
                       Not Specified
                     </span>
                   </div>
@@ -760,29 +993,34 @@ export const NutritionScreen = () => {
           )}
         </div>
 
-        {/* 4. Today's Meals Timeline Section */}
+        {/* 4. Selected Day's Meals Timeline Section */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', padding: '0 2px' }}>
-            <h3 
-              style={{ 
-                fontSize: '17px', 
-                fontWeight: '800', 
-                color: '#0F172A', 
-                margin: 0,
-                letterSpacing: '-0.2px' 
-              }}
-            >
-              Today's Meals
-            </h3>
+            <div>
+              <h3 
+                style={{ 
+                  fontSize: '17px', 
+                  fontWeight: '800', 
+                  color: '#0F172A', 
+                  margin: 0,
+                  letterSpacing: '-0.2px' 
+                }}
+              >
+                {activeDayObj.fullName}'s Meal Plan
+              </h3>
+              <p style={{ fontSize: '11px', color: '#64748B', margin: '2px 0 0' }}>
+                Balanced toddler nutrition planned by Dr. Ila B
+              </p>
+            </div>
 
             <span 
               style={{
                 fontSize: '11.5px',
-                fontWeight: '700',
-                color: '#0077D7',
+                fontWeight: '800',
+                color: '#056DB5',
                 background: '#E0F2FE',
-                padding: '3px 8px',
-                borderRadius: '8px'
+                padding: '4px 10px',
+                borderRadius: '12px'
               }}
             >
               {mealsList.length} Meals
@@ -827,7 +1065,7 @@ export const NutritionScreen = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     flexShrink: 0,
                     marginTop: '16px'
                   }}
@@ -849,7 +1087,7 @@ export const NutritionScreen = () => {
                     gap: '10px'
                   }}
                 >
-                  {/* Card Header: Meal Title + Time Badge + Chevron */}
+                  {/* Card Header: Meal Title + Time Badge + Nutrition Tag */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <h4 
@@ -866,18 +1104,31 @@ export const NutritionScreen = () => {
                         <span 
                           style={{
                             fontSize: '11px',
-                            fontWeight: '600',
-                            color: '#64748B',
-                            background: '#F1F5F9',
-                            padding: '2px 7px',
-                            borderRadius: '6px'
+                            fontWeight: '700',
+                            color: '#056DB5',
+                            background: '#F0F7FD',
+                            padding: '2px 8px',
+                            borderRadius: '8px'
                           }}
                         >
                           {meal.time}
                         </span>
                       )}
                     </div>
-                    <ChevronRight size={18} color="#94A3B8" />
+                    {meal.tag && (
+                      <span 
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          color: '#16A34A',
+                          background: '#DCFCE7',
+                          padding: '2px 8px',
+                          borderRadius: '8px'
+                        }}
+                      >
+                        {meal.tag}
+                      </span>
+                    )}
                   </div>
 
                   {/* Card Content Row */}
@@ -892,7 +1143,8 @@ export const NutritionScreen = () => {
                         borderRadius: '14px',
                         objectFit: 'cover',
                         background: '#FAF9F7',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        border: '1px solid #F1F5F9'
                       }}
                       onError={(e) => {
                         e.target.src = '/assets/rice_bowl_1.png';
@@ -927,13 +1179,17 @@ export const NutritionScreen = () => {
                               display: 'flex', 
                               alignItems: 'center', 
                               gap: '4px',
-                              flexShrink: 0 
+                              flexShrink: 0,
+                              background: '#F8FAFC',
+                              padding: '2px 8px',
+                              borderRadius: '8px',
+                              border: '1px solid #E2E8F0'
                             }}
                           >
                             {renderPortionIcon(item.icon)}
                             <span 
                               style={{ 
-                                fontSize: '12.5px', 
+                                fontSize: '12px', 
                                 fontWeight: '700', 
                                 color: '#0F172A' 
                               }}
@@ -950,6 +1206,40 @@ export const NutritionScreen = () => {
               </div>
             ))}
 
+          </div>
+        </div>
+
+        {/* 5. Doctor Ila B's Advice Card */}
+        <div style={{
+          background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
+          borderRadius: '18px',
+          padding: '14px 16px',
+          border: '1px solid #BAE6FD',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+          marginTop: '4px'
+        }}>
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            background: '#056DB5',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <Sparkles size={18} />
+          </div>
+          <div>
+            <h4 style={{ fontSize: '13.5px', fontWeight: '800', color: '#0369A1', margin: 0 }}>
+              Dr. Ila B's Nutrition Tip
+            </h4>
+            <p style={{ fontSize: '12px', color: '#0C4A6E', margin: '3px 0 0', lineHeight: 1.4 }}>
+              Offer small, frequent meals and ensure plenty of fresh water between food times. Avoid force feeding during teething phases.
+            </p>
           </div>
         </div>
 
